@@ -100,7 +100,7 @@
 
   <div class="box" style="margin-top:6px"><h2>Pages · KNOB 1 · 2 · 3 · 4</h2><div class="in">
     <table>
-      <tr><td><span class="k">EDIT</span> WAVE</td><td>the pad's sample · COPY> pad · COPY (turn twice) · –</td></tr>
+      <tr><td><span class="k">EDIT</span> WAVE</td><td>the pad's sample · COPY> pad · COPY (turn twice) · DELETE its own sample (turn twice)</td></tr>
       <tr><td>SOUND</td><td>TUNE (semitones) · FINE · DECAY · LEVEL</td></tr>
       <tr><td>TRUNC</td><td>START · END · DIR (fwd / rev) · SPEED (45 / 33)</td></tr>
       <tr><td>OUT</td><td>CHOP group (--, 1–8: its pads cut each other) · PAN · CUT · RESO (only channels 1–2 filter)</td></tr>
@@ -112,7 +112,7 @@
       <tr><td><span class="k">SEQ</span> LOOP</td><td>LOOP · BARS (AUTO, 1–32) · QUANT (AUTO CORRECT, also NOTE REPEAT's grid) · SWING 50–71 %</td></tr>
       <tr><td>LOOP TOOLS</td><td>CLEAR (turn twice) · COPY> loop · COPY (turn twice)</td></tr>
       <tr><td>SONG</td><td>STEP · SEG (its loop) · REPEAT (0: the song ends here) · SONG OFF / 1–4</td></tr>
-      <tr><td><span class="k">GLO</span> SETUP</td><td>TEMPO · BACK · – · RESET (<b>all loops gone</b>, turn twice); tap: CLICK: CLICK · COUNT · DUB; tap: OUTPUT: SMOOTH</td></tr>
+      <tr><td><span class="k">GLO</span> SETUP</td><td>TEMPO · BACK · – · RESET (<b>all loops gone</b>, turn twice); tap: CLICK: CLICK · COUNT · DUB; tap: OUTPUT: SMOOTH; tap: <b>SAMPLE</b></td></tr>
     </table>
   </div></div>
 </div>
@@ -139,7 +139,7 @@
       <tr><td><span class="k">GLO</span> held + white</td><td>1–8 <b>mute</b>, 9–16 <b>solo</b> ch 1–8</td></tr>
       <tr><td><span class="k">EDIT</span> held + <span class="k">OCT−</span></td><td><b>undo</b> the last clear / erase / copy (again: redo)</td></tr>
       <tr><td><span class="k">FX</span> held + white 1–4</td><td><b>punch-in</b>: roll 1/8 · roll 1/16 · reverse · tape stop; <span class="k">OCT−</span> / <span class="k">OCT+</span>: reverb / echo throw</td></tr>
-      <tr><td><span class="k">LFO</span> + pad</td><td><b>erase</b> its hits as the playhead passes (stopped: all)</td></tr>
+      <tr><td><span class="k">LFO</span> + pad</td><td><b>erase</b> its hits as the playhead passes (stopped: all); <span class="k">LFO</span> tapped: <b>SAMPLE</b></td></tr>
       <tr><td><span class="k">SAVE</span></td><td>save now; <b>held + a black key</b>: the loop into that loop</td></tr>
     </table>
   </div></div>
@@ -180,7 +180,7 @@
     <table>
       <tr><td>Big line</td><td>the selected pad and its sound (A01 KICK), or what just changed</td></tr>
       <tr><td>Top right</td><td>the tempo, with <b>ARMED</b>, <b>COUNT</b> or <b>REC</b> before it; below it the page</td></tr>
-      <tr><td>4 × 4 pads</td><td>the bank on the keys, pad 01 bottom left; red while it sounds, the selected one outlined, <b>dark: muted</b>, yellow ring: soloed</td></tr>
+      <tr><td>4 × 4 pads</td><td>the bank on the keys, pad 01 bottom left; red while it sounds, the selected one outlined, <b>greyed out with a red bar: muted</b>, yellow ring: soloed</td></tr>
       <tr><td>Faders</td><td>beside the pads: channels 1–8, the four on the knobs white; M muted, S soloed</td></tr>
       <tr><td>A B</td><td>the bank on the keys</td></tr>
       <tr><td>M · L</td><td>MULTI PITCH · 16 LEVELS</td></tr>
@@ -213,6 +213,14 @@
       <tr><td>Songs</td><td>4 songs of up to 32 steps, each a loop (SEG) played REPEAT times; <span class="k">PLAY</span> plays it from step 1</td></tr>
     </table>
   </div></div>
+
+  <div class="box" style="margin-top:6px"><h2>Sampling over USB</h2><div class="in">
+    <ol>
+      <li>Computer or phone: sound output <b>zpc60 FM-1</b> (Linux: "pid.codes Test PID"), play.</li>
+      <li>Hit the pad, tap <span class="k">LFO</span>: the meter moves. RATE 40/26/20K · TIME · THRESH · MON.</li>
+      <li><span class="k red">REC</span>: ERASE %, then REC; REC again or TIME ends it. On the pad as SMP01–24; again on that pad: replaced.</li>
+    </ol>
+  </div></div>
 </div>
 
 <div>
@@ -238,7 +246,7 @@
   </div></div>
 </div>
 </div>
-<footer><span>zpc60 0.1: a first version, not yet in a shop or on the hub.</span><span>GPL-3.0 · github.com/zvenson/zpc60</span></footer>
+<footer><span>zpc60 0.1: a first version. Install it from thefirmwarehub.com (Chrome / Edge, USB).</span><span>GPL-3.0 · github.com/zvenson/zpc60</span></footer>
 </div>
 </div>
 <script>

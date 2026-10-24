@@ -1,153 +1,68 @@
-<p align="center"><a href="https://zp12.designburgapps.com/"><img src="web/img/zp12-logo.svg" width="560" alt="zp12 sampling drums"></a></p>
+<h1 align="center">zpc60</h1>
+
+<p align="center"><b>A 12-bit sampling sequencer for the M-VAVE FM-1</b>, after the drum machines of the late 80s:<br>
+4 × 4 pads, 40 kHz, note repeat, 16 levels, track mute, and sampling on the machine itself.</p>
 
 <p align="center">
-  <a href="https://zp12.designburgapps.com/install/"><img src="https://img.shields.io/badge/firmware-2.4.4-c82e32" alt="firmware 2.4.4"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-263e70" alt="GPL-3.0"></a>
-  <img src="https://img.shields.io/badge/device-M--VAVE%20FM--1-1e3060" alt="M-VAVE FM-1">
-  <img src="https://img.shields.io/badge/install-Chrome%20%2F%20Edge%2C%20USB-56627e" alt="Chrome / Edge over USB">
+  <img src="https://img.shields.io/badge/firmware-0.1-cc1e28" alt="firmware 0.1">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-363436" alt="GPL-3.0"></a>
+  <img src="https://img.shields.io/badge/device-M--VAVE%20FM--1-346ce0" alt="M-VAVE FM-1">
 </p>
 
 <p align="center">
-  <b><a href="https://zp12.designburgapps.com/">Website</a></b> ·
-  <b><a href="https://zp12.designburgapps.com/install/">Install 2.4.4</a></b> ·
-  <a href="https://zp12.designburgapps.com/editor/">Sample editor (sample + drop)</a> ·
-  <a href="https://zp12.designburgapps.com/backup/">Backup</a> ·
-  <a href="https://zp12.designburgapps.com/#cheatsheet">Cheat sheet</a> (<a href="https://zp12.designburgapps.com/zp12-cheat-sheet.pdf">PDF</a>) ·
-  <a href="https://zp12.designburgapps.com/#video">Video</a>
+  <img src="web/img/zpc60-home.png" width="230" alt="the 4 x 4 pads and the faders">
+  <img src="web/img/zpc60-hit.png" width="230" alt="pads lit as they sound">
+  <img src="web/img/zpc60-trackmute.png" width="230" alt="TRACK MUTE: muted pads greyed out">
+  <img src="web/img/zpc60-sample.png" width="230" alt="sampling over USB">
 </p>
 
-<p align="center">
-  <img src="web/img/home.png" width="200" alt="the faders">
-  <img src="web/img/armed.png" width="200" alt="ARMED">
-  <img src="web/img/steps.png" width="200" alt="the step grid">
-  <img src="web/img/mute.png" width="200" alt="mute and solo">
-</p>
+zpc60 is a fork of [zp12](https://github.com/zvenson/zp12) (the SP-1200-style sampler) that turns the FM-1 into a
+sampling sequencer in the spirit of the late-80s machines: a beige-grey panel, a blue LCD, two banks of 16 pads,
+12-bit sound at 40 kHz, the swing, note repeat and 16 levels you know from them. Inspired by them; their names are
+trademarks of their owners, no affiliation.
 
-<p align="center"><a href="https://zp12.designburgapps.com/editor/"><img src="web/img/sampling.png" width="820" alt="New in 2.0: sampling in the browser"></a><br>
-<sub>New in 2.0: sample from a microphone, an interface or the line-in in the <a href="https://zp12.designburgapps.com/editor/">editor</a>, trim it, onto a pad.</sub></p>
+> **Status: 0.1** (2026-10-24), a first version. Install it from **[the Firmware Hub](https://thefirmwarehub.com/)**
+> (Chrome or Edge, USB). Cheat sheet: [web/zpc60-cheat-sheet.pdf](web/zpc60-cheat-sheet.pdf).
+> Your FM-1 can go back to the official firmware or any other one at any time.
 
-# zp12
+## What it does
 
-A 12-bit sampling drum machine for the **M-VAVE FM-1**: 32 sounds at 26.04 kHz (or 27.5 kHz), pitched
-without interpolation, eight output channels with their filters, a panel-style screen. Inspired by the
-12-bit samplers of the 80s; their names are trademarks of their owners, no affiliation.
+- **Two banks of 16 pads** on the 16 white keys (pad 01 bottom left on the screen; OCT+ bank B). A factory kit at
+  **40 kHz, 12 bit**, pitched without interpolation: bank A a whole kit, bank B its darker and retuned twins.
+- **8 channels**, each with its fader (KNOB 1–4, SEL: 5–8): a pad plays on its place in the row pair (pads 01 and 09
+  on channel 1 …), so a hat and an open hat choke each other. Channels 1–2 have the resonant filter.
+- **The sequencer** from zp12: 16 loops of 1–32 bars or AUTO, real-time recording with count-in and AUTO CORRECT,
+  swing, overdub, step editing (hold SEQ), four songs, undo.
+- **NOTE REPEAT**: hold **ENV** and pads: they repeat on every step of AUTO CORRECT (1/16 when it is off), swung,
+  recorded while REC runs. ENV tapped is still tap tempo.
+- **16 LEVELS**: **ARP** twice: the white keys play the last pad at 16 velocities (ARP once: MULTI PITCH over 27 keys).
+  Hits are saved with 16 levels.
+- **TRACK MUTE** per pad: **HOME** on the main page, then a white key mutes / unmutes its pad (the loop stops
+  playing it, live it still sounds); ENV held + a pad: solo. Muted pads are greyed out, the screen says TRACK MUTE.
+- **Sampling on the machine, over USB**: the FM-1 is your computer's (or phone's) speaker, **zpc60 FM-1**. Play
+  anything into it, hit the pad, tap **LFO**, press **REC**: it erases its room (ERASE %), waits for the sound if you
+  set THRESH, takes it at 40, 26 or 20 kHz and puts it on the pad. Again on that pad: the new take replaces it.
+  **EDIT → WAVE → DELETE** (KNOB 4, twice) frees it. The computer's volume slider only sets what you hear (MON).
+- zp12's **effects**: chorus, delay, reverb sends per pad, a DJ filter, punch-in (FX + white 1–4) and REV / ECHO throw.
 
-> **Status: 2.4.4** (2026-10-19). Install: **https://zp12.designburgapps.com/install/** · Sample editor (now with
-> sampling in the browser): **https://zp12.designburgapps.com/editor/** · Backup: **https://zp12.designburgapps.com/backup/** ·
-> Cheat sheet: **https://zp12.designburgapps.com/#cheatsheet** ([PDF](https://zp12.designburgapps.com/zp12-cheat-sheet.pdf)).
->
-> The factory kit on the keys (bank C6–C8: a grand piano, Cm9 and F13 stabs and a note, VCSL CC0; bank D: E-piano chords, horns, vibes, bass,
-> scratches), eleven loops on the black keys, the sequencer (loops of 1–32 bars or AUTO, song, real-time recording with count-in and AUTO CORRECT, step editing, swing, erase, tap tempo), sloopDX's
-> chorus, delay and reverb, saved in flash (0xC4000.., a room sloopDX leaves free; stock SLOOP keeps its own samples there: back them up first), own samples from the web editor.
-> Plan: [CONCEPT.md](CONCEPT.md), open work: [TODO.md](TODO.md).
+## The room
 
-## New in 2.4
-
-- **CHOP groups**: EDIT → OUT, KNOB 1 = CHOP (--, 1–8 since 2.4.1; its label shows the channel, CH1–8). Pads in one group
-  cut each other wherever they are, so chops on A1–A8 play as one voice; each still plays through its own position's
-  channel (fader, filter, mute). Hold pads while turning: they all take the group ("4 PADS CHOP 1").
-  Pads on one position (A1, B1, C1, D1) cut each other as before. The editor's **Chop to pads** sets the group for
-  you (Cut each other: group 1 unless you pick another). Why: chops on A1–A8 rang out over each other.
-- **2.4.4**: the update loader shows what it does, in the Firmware Hub's look (as OberVave and Shine On): ZP12, UPDATE MODE with a running light while it waits, WRITING with 20 segments and the percent, UPDATE FAILED, thefirmwarehub.com; the idea from Skiff (illuminus5). Tested on the FM-1.
-- **2.4.3**: the FM-1's **TRS MIDI IN** jack works: a keyboard, pads or a drum machine through a TRS-to-DIN adapter
-  plays the pads (notes 36–67) and picks the loops (Program Change), as USB-MIDI does (if nothing plays, try the other
-  adapter type, A or B). Before, only USB-MIDI reached zp12.
-- **2.4.2**: a fix: the start screen's text no longer runs past its buffer (found by the browser simulator); an own
-  sample's 8-letter name on EDIT → WAVE no longer runs into the next column's buffer either.
-
-## New in 2.3
-
-- **REV THROW / ECHO THROW** (after SLOOP 2.6 and Felucca 1.5.1): hold FX and OCT− (reverb) or OCT+ (echo): every
-  pad's send goes full while held, gliding in and out; the echo's feedback goes to at least 70 %. The pads' sends
-  stay as set, nothing is recorded. OCT− / OCT+ light while it throws; the bank stays.
-- **Installer**: also finds an FM-1 that names itself SLOOP or CLIPPER on USB, and "not found" lists the MIDI ports
-  it saw (from SLOOP 2.6).
-
-## New in 2.2
-
-- **A DAW switches the loops**: MIDI Program Change 0–15 picks loop 1–16 on any channel, as a black key does
-  (stopped: at once; playing: at the end of the loop, "LOOP n NEXT").
-
-## New in 2.1
-
-- **A pad's channel is its position**, 1–8 in every bank, as on the SP-1200: fader 3, mute 3, solo 3 and the
-  choke are always the pads on position 3. Pads 1–2 have the resonant filter (put a chord there for the mumpf).
-  OUT → CHAN shows it (no longer set by hand). Before, sounds on one channel cut each other unexpectedly (the shaker
-  the piano chords on 8, the bass the kick on 1).
-- **The kit laid out by position**: the sounds sharing a position are the ones that may cut each other (the hats
-  and the shaker on 3); bank A is a groove of its own (kick, snare, hat, clap, tom, crash, bass, piano stab).
-- **A 2.0 save moves along**: its pads (edits, own samples) and its loops' hits go to the new places; they sound
-  as before.
-- **GLO held**: keys 1–8 light while their channel is heard, dark when muted (or another is soloed); 9–16 light
-  while soloed.
-
-## New in 2.0
-
-- **Sampling in the browser**: the editor records from a microphone, an audio interface or the line-in (on a phone:
-  its microphone), with a level meter, a threshold start as on the old samplers, and a stop by click or when the
-  FM-1's free room is full (shown in seconds before you record). Then as before: trim, 26 / 27.5 kHz, 45→33, ×2,
-  hear it as the FM-1 plays it, onto a pad. No firmware needed for this part.
-- **Count-in that does what you expect**: GLO → CLICK → COUNT (OFF, 1 or 2 bars); DUB: an overdub while playing
-  starts at once or from the next bar's 1 (COUNT in the LCD). ARMED and COUNT 4 3 2 1 big in the LCD. A REC press
-  shorter than 2 s is always a tap; held 2 s it clears the loop.
-- **Mute / solo**: GLO held + white keys 1–8 mute channels 1–8, 9–16 solo them (in ~3 ms, no click, the pattern
-  plays on); M / S under the faders, the keys show the state while GLO is held.
-- **Filters made clear**: EDIT → OUT shows CUT / RESO as `--` on pads 3–8 (only 1–2 have the dynamic filter);
-  turning them says FILTER: PADS 1-2.
-
-Install from Chrome or Edge: https://zp12.designburgapps.com/install/ (also https://dx7.designburgapps.com/zp12/).
-Back to sloopDX or SLOOP any time with their installers; if the FM-1 does not answer, hold OCT− while
-switching it on (USB rescue).
-
-## Playing (0.4)
-
-| | |
-| --- | --- |
-| White keys 1–8 · 9–16 | bank A · B pads (OCT+: C · D, OCT−: back) |
-| Black keys | loops 1–11 (segments): stopped at once, playing from the end of the loop |
-| KNOB 1–4 | the faders of channels 1–4 (SEL: 5–8, lit, until pressed again; from a page it goes to the faders); a page takes them (the header says which, its tabs show the others), untouched 12 s (GLO → SETUP → BACK: 6 s … OFF) or HOME gives them back |
-| EDIT | WAVE (the pad's sample · COPY> · COPY the sound to a pad), SOUND (TUNE · FINE · DECAY · LEVEL), TRUNC (START · END · DIR · SPEED 45/33), OUT (CHAN: the pad's position · PAN · CUT · RESO; `--` on pads 3–8, which have no dynamic filter), SENDS (DRIVE · CHO · DLY · REV) of the last pad |
-| FX | FILTER (a DJ filter on the mix: LP · OFF · HP, RESO), CHORUS (RATE · DEPTH · MIX), DELAY (TIME · FDBK · COLOR · MIX), REVERB (SIZE · DAMP · PRE) |
-| SEQ tapped | LOOP (LOOP · BARS 1–32 / AUTO · QUANT · SWING), LOOP TOOLS (CLEAR · COPY> · COPY, turn twice), SONG (STEP · LOOP · REPEAT, 0 ends · SONG OFF / 1–4: four songs of the loops) |
-| SEQ held | the last pad's 16 steps of a bar on the white keys (lit = a hit); OCT− / OCT+: the bars |
-| PLAY · REC | run / stop · record (stopped: ARMED, PLAY counts in: GLO → CLICK → COUNT off / 1 / 2 bars; playing: overdub on / off, at once or from the next 1: DUB); a press under 2 s is always a tap, REC held 2 s: clear the loop |
-| GLO held + white keys | 1–8 mute channels 1–8, 9–16 solo them (M / S under the faders; keys 1–8 lit while heard, dark when muted) |
-| Recording + TUNE / FINE / DECAY / CUT turned | the pad's hits keep the values turned (a lock per hit, a red dot in the step grid) |
-| EDIT + OCT− | undo the last clear / erase / copy (again: redo) |
-| LFO held + pad | erase that pad's hits as the playhead passes (stopped: at once) |
-| ENV · GLO · SAVE | tap tempo · SETUP (TEMPO, BACK: pages back after 6–60 s or never, RESET: turn twice, the factory state), CLICK (CLICK · COUNT · DUB), OUTPUT (SMOOTH) · save now (it saves by itself when stopped and quiet); SAVE held + a black key: the loop into that loop |
-| ARP | MULTI PITCH: the last sound over all 27 keys (F4 as tuned) |
-| SELECT · ALGORITHM · PRESETS | tempo · the sound to edit · the sample of the last pad (one sample on many pads, each tuned its own way) |
-| USB MIDI | notes 36–67 play pads A1–D8; Program Change 0–15 picks loop 1–16 (as a black key: at the loop's end) |
-| Own samples | https://zp12.designburgapps.com/editor/: sample (mic, interface, line-in, threshold start) or drop a WAV, trim, 26 / 27.5 kHz, 45→33, hear it as the FM-1 plays it, onto a pad (2.5 s free, 6.3 s with sloopDX's bank room; 1.4+) |
-| Backup | https://zp12.designburgapps.com/backup/: loops, sounds, songs, samples and sloopDX's DX7 banks in one file, and back (Chrome / Edge, 1.3+) |
-
-## Sound
-
-- 12-bit linear samples, packed, at 26.04 / 27.5 kHz; pitch by the playback rate with a zero-order hold
-  (no interpolation): the aliasing is the sound. 45→33: stored fast, played slow.
-- Channels 1–2: a 4-pole resonant low-pass (SSM2044-style), open as CUT at the hit and closing two octaves
-  as the sound decays (the original's dynamic filters); 3–6: a fixed low-pass; 7–8: none. The order is the
-  hardware's: sample, VCA (decay), DRIVE, filter, then the channel's fader. One sound per channel at a time. A pad's channel
-  is its position, 1–8 in every bank (2.1, as on the SP-1200): fader, mute, solo, the filter and the choke follow the pad.
-- Stored fast, played slow (the old trick): 45→33 per sound, and own samples at ×2 (an octave down on the
-  pad, TUNE −12 set for you) or ×2.7: more time in the same memory, half the bandwidth, the grit.
-- The master: −6 dB and a soft knee above 3/4, so a pile of hits rounds off instead of clipping hard.
-- The start (a key skips it) plays its ba-dum-tss on the pads A5, C1, A1 + A6: put your own sounds there for your own.
-- SMOOTH (GLO → OUTPUT, on by default): where a sound is cut mid-wave (a new hit on its channel, its end, a TRUNC
-  start) the jump is bridged in ~1 ms, so it does not click; a sample from its own beginning keeps its attack.
-- Faders and LEVEL in an audio taper, as the original's sliders: 100 as set, 50 −12 dB, 25 −24 dB, 127 +4 dB.
-- `firmware/src/sp_core.c`; host test `tests/sp_core_test.c` renders a demo WAV.
+The flash outside the app is shared by every FM-1 firmware. zpc60 keeps its save where zp12 does (its own format: it
+never reads a zp12 save; switching back and forth, the last one saving wins) and its own samples in zp12's rooms:
+about **1.2 s at 40 kHz** free, more at 26 or 20 kHz, more again with sloopDX's bank room (allowed in the
+[zp12 sample editor](https://zp12.designburgapps.com/editor/), which works with zpc60 too). Recording your own
+samples overwrites what other firmwares kept in those rooms (OberVave's patterns at 0xF4000–0xFBFFF among them):
+back up first.
 
 ## Build
 
-`sh build.sh [--release X.Y]` (JieLi toolchain and AC79 SDK as for SLOOP: `tools/get_toolchain.sh`).
-Host: `cc -O2 -o build/host/sp_core_test tests/sp_core_test.c -lm`, `tests/zp12_ui_test.c` (screens as PPM).
+As zp12 (see [BUILDING.md](BUILDING.md) and [CLAUDE.md](CLAUDE.md)): `./build.sh` (dev, identity FM-1_6000) or
+`./build.sh --release 0.1` (FM-1_6001: FM-1_60XY = release X.Y). Host tests in `tests/` (the sequencer, the screen
+with the device's 80-row canvas, the sampler with a simulated flash and USB stream).
 
-## Credits and licence
+## Credits
 
-GPL-3.0. Built on **SLOOP** by isod89 (github.com/isod89/sloop-fm1) and **Felucca** by Leo Kuroshita
-(Hügelton Instruments), with the FM-1 platform as **sloopDX** carries it; SLOOP's README is kept as
-`SLOOP-README.md`. Factory sounds: CC0 (VSCO-2 CE, VCSL, Sonic Pi; `assets/samples-cc0`); bank D from SLOOP's hip-hop pack, the
-E-piano by Greg Sullivan (CC BY 3.0, `assets/samples-cc0/HIPHOP/CREDITS.txt`). Not affiliated
-with M-VAVE.
+zpc60 is built on **zp12** (zvenson), which is built on **SLOOP** (isod89) and **Felucca** (Leo Kuroshita, Hügelton
+Instruments): GPL-3.0, see [LICENSING.md](LICENSING.md). Factory sounds CC0 (VSCO-2 CE, Sonic Pi, SLOOP's hip-hop
+pack); the E-piano by Greg Sullivan (CC BY 3.0). The update loader's screen after the idea from Skiff (illuminus5).
+M-VAVE and FM-1 are trademarks of their owners; zpc60 is not affiliated with M-VAVE or Akai.

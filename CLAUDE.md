@@ -1,3 +1,18 @@
+# zpc60
+
+A 12-bit sampling sequencer for the M-VAVE FM-1 after the late-80s drum machines (the MPC60's spirit; no Akai / MPC
+marks in the product name): a fork of zp12 (remote `zp12` = ../zp12sloop, github.com/zvenson/zp12), itself on SLOOP 2.3
+and Felucca. GPL-3.0. Repo github.com/zvenson/zpc60 (`main`). What differs from zp12 (the rest of this file is zp12's
+and still holds): the look (sp_ui.c palette after the MPC60 II: black name strip, blue LCD, grey pad field, cream caps,
+red REC; 4 x 4 pads, pad 1 bottom left; regions taller than the device's 80-row canvas drawn in halves), two banks of 16
+pads (A01-B16), the 40 kHz factory kit (tools/gen_kit.py), NOTE REPEAT (ENV held + pads, sp_seq.c sq_nr_*), 16 LEVELS
+(ARP twice, sq_ev lvl 4 bits), TRACK MUTE per pad (HOME on HOME, sq.pmute / psolo), identity FM-1_60XY
+(`./build.sh --release X.Y`), its own save (ZS_MAGIC "ZC60"), the USB name "zpc60 FM-1". The USB sampler
+(usb.c FELUCCA_UAI, sp_sampler.c, tests/sp_sampler_test.c) is shared with zp12 2.5: change both. Installed from the
+Firmware Hub (no own site yet): the package in docs/firmware/. Cheat sheet web/cheatsheet.html -> web/zpc60-cheat-sheet.pdf.
+
+(zp12's notes follow)
+
 # zp12
 
 A second firmware for the M-VAVE FM-1: a 12-bit sampler drum machine in the spirit of the SP-12 / SP-1200, built on

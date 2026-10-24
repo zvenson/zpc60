@@ -1,6 +1,4 @@
 {
-  "what": "A 12-bit sampler after the E-mu SP-1200: sample in the browser (mic, line-in or a file), unplug, and the FM-1 plays on its own. Gritty and unsmoothed, with loops and songs.",
-  "kinds": ["drums"],
-  "play": "https://thefirmwarehub.com/play/zp12/",
-  "editor": "https://zp12.designburgapps.com/editor/"
+  "what": "A 12-bit sampling sequencer after the late-80s drum machines: two banks of 16 pads at 40 kHz, note repeat, 16 levels, track mute, swing, and sampling on the FM-1 itself (a computer or phone plays into it over USB).",
+  "kinds": ["drums"]
 }
