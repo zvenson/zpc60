@@ -65,6 +65,7 @@ static struct {
     volatile uint32_t turn;                     /* pads whose TUNE / DECAY / CUT is being turned: recorded with the hits */
     volatile uint32_t nr;                       /* NOTE REPEAT (ENV held): the pads held, hit on every AUTO CORRECT step */
     volatile uint8_t nr_vel;
+    volatile uint32_t pmute, psolo;             /* TRACK MUTE: pads the loops do not play (live hits still sound); solo: only these */
 } sq = {0, 0, 0, 0, 0, 0xFF, 3, 0, 1, 1, 0, 0, 0, 0, 0, 900, 0, 0, SQ_BAR, 0, 0, 0, 0, 0};
 
 static uint32_t sq_lvl_vel(uint32_t lvl) { return (lvl + 1u) * 8u - 1u; }
@@ -454,6 +455,8 @@ static void sq_block(void)
                 e->skip = 0;
                 continue;
             }
+            if ((sq.pmute >> e->pad) & 1u || (sq.psolo && !((sq.psolo >> e->pad) & 1u)))
+                continue;                            /* TRACK MUTE */
             if (sq.recording && (sq.turn >> e->pad) & 1u) {   /* its pad's knobs turned: the hit takes them */
                 L[i] = sp_lock_of(&sp_sound[e->pad]);
                 if (!e->lk) { e->lk = 1; sq.gen++; }

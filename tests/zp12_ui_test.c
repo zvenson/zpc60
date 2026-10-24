@@ -170,6 +170,23 @@ int main(int argc, char **argv)
     if (SPF_CHOP(sp_sound[0].flags) != 8u || strcmp(ui.msg, "CHOP 8")) { printf("zp12 ui: OUT > CHOP up to 8 FAIL\n"); return 1; }
     for (i = 0; i < 9u; i++) knob(0, -1);
     if (SPF_CHOP(sp_sound[0].flags) || SPF_CHOP(sp_sound[1].flags) != 1u || strcmp(ui.msg, "NO CHOP")) { printf("zp12 ui: OUT > CHOP off FAIL\n"); return 1; }
+    /* zpc60 TRACK MUTE: HOME on HOME; white 3 mutes A03, ENV held + white 1 solos A01, black keys stay loops, HOME again: off */
+    page(PG_HOME); ui.steps = 0; ui.pair = 0; ui.multi = 0; sq.pmute = sq.psolo = 0;
+    button(B_HOME);
+    if (!ui.tmute) { printf("zp12 ui: HOME on HOME: no TRACK MUTE FAIL\n"); return 1; }
+    key_down(4, 0);                                  /* white 3 */
+    if (sq.pmute != 4u || strcmp(ui.msg, "MUTE A03")) { printf("zp12 ui: TRACK MUTE white 3 FAIL (%s)\n", ui.msg); return 1; }
+    { uint16_t b0 = sq.bpm10; ui.held = 1u << B_ENV; button(B_ENV); key_down(0, 0); ui.held = 0;
+      if (sq.psolo != 1u || sq.bpm10 != b0 || sq.nr) { printf("zp12 ui: TRACK MUTE ENV + white 1 solo FAIL (%s)\n", ui.msg); return 1; } }
+    sq.psolo = 0;
+    fm1_ms += 20; ui.force = 1; ui_draw(); ppm("zpc60-trackmute");
+    { uint32_t bt, kk, gg; ui_leds(&bt, &kk, &gg);
+      if ((kk >> 4) & 1u || !((kk >> 0) & 1u) || !((gg >> 4) & 1u)) { printf("zp12 ui: TRACK MUTE keys FAIL\n"); return 1; } }
+    key_down(4, 0);
+    if (sq.pmute) { printf("zp12 ui: TRACK MUTE unmute FAIL\n"); return 1; }
+    button(B_HOME);
+    if (ui.tmute) { printf("zp12 ui: HOME again: TRACK MUTE still on FAIL\n"); return 1; }
+    printf("zp12 ui: TRACK MUTE ok\n");
     printf("zp12 ui: screens written to %s\n", dir);
     return 0;
 }

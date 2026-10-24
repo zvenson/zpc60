@@ -269,7 +269,7 @@ static void zp12_main(void)
             sq.erase = er;
             {   /* ENV held: NOTE REPEAT, the pads held hit on every AUTO CORRECT step (sp_seq.c; not with MULTI / 16 LEVELS) */
                 uint32_t nr = 0;
-                if ((bt >> B_ENV) & 1u && !ui.multi)
+                if ((bt >> B_ENV) & 1u && !ui.multi && !ui.tmute)
                     for (k = 0; k < 27u; k++)
                         if ((n >> k) & 1u) {
                             uint32_t pd = key_pad(k);

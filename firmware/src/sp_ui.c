@@ -60,6 +60,7 @@ static struct {
     uint8_t page;
     uint8_t multi;                              /* ARP: 1 MULTI PITCH, 2 16 LEVELS */
     uint8_t env_used;                           /* ENV held: a pad pressed (NOTE REPEAT, not a tap) */
+    uint8_t tmute;                              /* TRACK MUTE: the white keys mute / unmute their pads (HOME on HOME) */
     uint16_t env_bpm;                           /* the tempo before ENV's tap (back if it was NOTE REPEAT) */
     uint8_t shift;                              /* SEL pressed (lit): the knobs are the faders 5-8 */
     uint8_t steps;                              /* SEQ held: the step grid on the keys */
@@ -339,6 +340,8 @@ static void draw_lcd(void)                      /* the LCD: big the state, below
         p = num(p, (int32_t)(t / SQ_BAR + 1u), t / SQ_BAR + 1u >= 10u ? 2u : 1u, 0);
         p = cat(p, ".");
         num(p, (int32_t)(t % SQ_BAR / SQ_PPQ + 1u), 1, 0);
+    } else if (ui.tmute) {
+        cat(big, "TRACK MUTE");
     } else {
         pad_label(p, ui.sel);
         p = cat(p + 3, " ");
@@ -371,14 +374,17 @@ static void draw_lcd(void)                      /* the LCD: big the state, below
 }
 
 /* a pad: grey rubber, red while it sounds, the one the knobs edit outlined white; its number on it */
+static int pad_muted(uint32_t k) { return (sq.pmute >> k) & 1u || (sq.psolo && !((sq.psolo >> k) & 1u)); }
 static void pad_at(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t k, int lit)
 {
     char l[4];
-    cv_rect(x - 1, y - 1, w + 2, h + 2, k == ui.sel ? C_WHITE : P_SLOT);
-    cv_rect(x, y, w, h, lit ? P_LED : P_PAD);
-    cv_rect(x + 2, y + 1, w - 4, 1, lit ? RGB(255, 150, 130) : P_PADHI);
+    int off = pad_muted(k);                      /* TRACK MUTE: dark; soloed: a yellow ring */
+    uint16_t face = lit ? P_LED : off ? P_NAVY2 : P_PAD;
+    cv_rect(x - 1, y - 1, w + 2, h + 2, (sq.psolo >> k) & 1u ? P_STEP : k == ui.sel ? C_WHITE : P_SLOT);
+    cv_rect(x, y, w, h, face);
+    cv_rect(x + 2, y + 1, w - 4, 1, lit ? RGB(255, 150, 130) : off ? P_NAVY3 : P_PADHI);
     pad_label(l, k);
-    cv_text_on(x + (w - 16) / 2, y + (h - 16) / 2, &FONT_S, l + 1, lit ? C_WHITE : P_INK, lit ? P_LED : P_PAD);
+    cv_text_on(x + (w - 16) / 2, y + (h - 16) / 2, &FONT_S, l + 1, lit ? C_WHITE : off ? P_RULE : P_INK, face);
 }
 
 /* HOME: the 4 x 4 pads of the bank (pad 1 bottom left, as on the old sampling sequencers), beside them the eight
@@ -518,7 +524,7 @@ static void ui_draw(void)
     }
     s = on_page() ? ui.page * 7u + 1u : 0x5A5Au;
     if (s != ui.sig_head || ui.force) { ui.sig_head = s; draw_head(); }
-    s = sig_of(&sp_sound[ui.sel], sizeof(sp_sound_t), 2166136261u ^ ui.sel * 7u ^ ui.page * 131u ^ sq.bpm10 * 7919u ^ ui.multi);
+    s = sig_of(&sp_sound[ui.sel], sizeof(sp_sound_t), 2166136261u ^ ui.sel * 7u ^ ui.page * 131u ^ sq.bpm10 * 7919u ^ ui.multi ^ ui.tmute * 64u);
     s = sig_of(ui.mix, sizeof ui.mix, s ^ ui.shift ^ ui.steps * 3u ^ ui.step_bar * 29u ^ ui.arm * 37u ^ ui.copy_to * 41u);
     s = sig_of(&fxp, sizeof fxp, s ^ (uint32_t)(djf.v + 64) * 6151u ^ (uint32_t)djf.res * 97u ^ ui.back * 2203u ^ sp_smooth * 4409u);
     s = sig_of(sq_songs, sizeof sq_songs, s ^ ui.song_cur * 31u ^ SQ_SONG_N * 17u ^ sq.song_mode ^ sq.song_sel * 7u);
@@ -544,12 +550,13 @@ static void ui_draw(void)
         if (on_page()) {                         /* a page: its tabs, the pads small below */
             s = (0xAB00u ^ ui.page * 977u ^ ui.sel * 131u ^ sp_sound[ui.sel].wave * 7919u ^ sq.seg * 7u) & ~1u;
             if (s != ui.sig_mid || ui.force) { ui.sig_mid = s; draw_tabs(); }
-            s = lit * 31u + ui.sel * 7919u + 1u;
+            s = (lit * 31u + ui.sel * 7919u ^ sq.pmute * 2654435761u ^ sq.psolo * 40503u) | 1u;
             if (s != ui.sig_pad || ui.force) { ui.sig_pad = s; draw_pads(); }
         } else {                                 /* the pads and the faders */
             for (i = 0; i < SP_NCH; i++)
                 on |= (uint32_t)((int32_t)(fm1_ms - ui.chan_ms[i]) < 90 && sp_ch[i].on) << i;
-            s = sig_of(ui.mix, sizeof ui.mix, on * 2654435761u ^ ui.shift * 3u ^ (sp_mute | sp_solo << 8) * 40503u ^ lit * 2246822519u ^ ui.sel * 7919u) | 1u;
+            s = sig_of(ui.mix, sizeof ui.mix, on * 2654435761u ^ ui.shift * 3u ^ (sp_mute | sp_solo << 8) * 40503u ^ lit * 2246822519u ^ ui.sel * 7919u ^
+                       sq.pmute * 3266489917u ^ sq.psolo * 668265263u) | 1u;
             if (s != ui.sig_mid || ui.force) { ui.sig_mid = s; ui.sig_pad = 0; draw_deck(); }
         }
     }
@@ -644,6 +651,32 @@ static void key_down(uint32_t k, int erase)
             ui.save_req = 1;
             ui.save_used = 1;
         }
+        return;
+    }
+    if (ui.tmute && !ui.steps && !erase) {       /* TRACK MUTE: a white key mutes / unmutes its pad; ENV held: solo */
+        uint32_t pd = key_pad(k), m;
+        char t[24], *q;
+        if (pd == 0xFFu) {                       /* (a black key: a loop, as ever) */
+            uint32_t b = 0, i;
+            for (i = 0; i < k; i++) b += white_of(i) == 0xFFu;
+            ui_loop(b);
+            return;
+        }
+        m = 1u << pd;
+        ui.sel = (uint8_t)pd;
+        if ((ui.held >> B_ENV) & 1u) {
+            if (!ui.env_used) { sq.bpm10 = ui.env_bpm; ui.tap_ms[0] = 0; }
+            ui.env_used = 1;
+            sq.psolo ^= m;
+            q = cat(t, "SOLO ");
+            pad_label(q, pd);
+            cat(q + 3, (sq.psolo & m) ? "" : " OFF");
+        } else {
+            sq.pmute ^= m;
+            q = cat(t, (sq.pmute & m) ? "MUTE " : "UNMUTE ");
+            pad_label(q, pd);
+        }
+        ui_say(t);
         return;
     }
     if ((ui.held >> B_ENV) & 1u && !ui.multi && !erase) {   /* ENV held: NOTE REPEAT (zp12.c sets sq.nr from the keys held) */
@@ -943,7 +976,13 @@ static void button(uint32_t b)
         ui.multi = (uint8_t)((ui.multi + 1u) % 3u);
         ui_say(ui.multi == 1u ? "MULTI PITCH" : ui.multi == 2u ? "16 LEVELS" : "PADS");
         break;
-    case B_HOME: page(PG_HOME); break;
+    case B_HOME:                                 /* from a page: HOME; on HOME: TRACK MUTE on / off */
+        if (ui.page == PG_HOME && !ui.steps) {
+            ui.tmute ^= 1u;
+            if (!ui.tmute) ui_say(sq.pmute | sq.psolo ? "MUTES KEPT" : "PADS");
+        }
+        page(PG_HOME);
+        break;
     case B_SEL:                                  /* the faders 5-8 (lit) or 1-4, until pressed again; from a page: the faders */
         ui.shift ^= 1u;
         page(PG_HOME);
@@ -1017,6 +1056,8 @@ static void ui_leds(uint32_t *btn, uint32_t *keys, uint32_t *glow)
     if (sq.song_mode) b |= 1u << B_SAVE;
     fam = ui.page;
     b |= 1u << (fam == PG_HOME ? B_HOME : fam <= PG_SFX ? B_EDIT : fam <= PG_REV ? B_FX : fam <= PG_SONG ? B_SEQ : B_GLO);
+    if (ui.tmute && fam == PG_HOME && (fm1_ms / 300u) & 1u)
+        b &= ~(1u << B_HOME);                    /* TRACK MUTE: HOME blinks */
     if ((ui.held >> B_FX) & 1u)                  /* FX held: OCT- / OCT+ lit while REV / ECHO THROW */
         b |= (uint32_t)(sp_thr_req & 1u) << B_OCTDN | (uint32_t)(sp_thr_req >> 1 & 1u) << B_OCTUP;
     else
@@ -1029,6 +1070,13 @@ static void ui_leds(uint32_t *btn, uint32_t *keys, uint32_t *glow)
             c = w % 8u;
             heard = !((sp_mute >> c) & 1u) && (!sp_solo || ((sp_solo >> c) & 1u));
             if (w < 8u ? heard : (sp_solo >> c) & 1u) k |= 1u << i;
+            g |= 1u << i;
+        }
+    } else if (ui.tmute && !ui.steps) {          /* TRACK MUTE: white keys lit while their pad is heard, glowing when muted */
+        for (i = 0; i < 27u; i++) {
+            uint32_t p = key_pad(i);
+            if (p >= 32u) continue;
+            if (!pad_muted(p)) k |= 1u << i;
             g |= 1u << i;
         }
     } else if (ui.steps) {                       /* the selected pad's steps of the bar on the white keys */

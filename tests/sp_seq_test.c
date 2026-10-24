@@ -388,6 +388,29 @@ int main(int argc, char **argv)
               "16 LEVELS: velocity in 16 steps");
         sq.seg = 0; sq.swing = 0;
     }
+    {   /* zpc60 TRACK MUTE: a muted pad's hits are not played, the others are; solo plays only its pad */
+        sq_seg_t *s9 = &sq_seg[9];
+        sq_play(0);
+        sq.seg = 9;
+        sq.pmute = 1u << 5;
+        sq_play(1);
+        sq.played = 0;
+        until_tick(SQ_BAR / 2u);
+        check(!(sq.played & 1u << 5) && count(s9, 5) == 16u, "TRACK MUTE: the muted pad's 16 hits stay in the loop, unplayed");
+        sq.pmute = 0;
+        sq.played = 0;
+        until_wrap();
+        until_tick(SQ_BAR / 4u);
+        check(sq.played & 1u << 5, "TRACK MUTE off: heard again");
+        sq.psolo = 1u << 7;
+        sq.played = 0;
+        until_wrap();
+        until_tick(SQ_BAR / 2u);
+        check(!(sq.played & 1u << 5), "TRACK MUTE solo on another pad: this one silent");
+        sq.psolo = 0;
+        sq_play(0);
+        sq.seg = 0;
+    }
     for (i = 0; i < SP_FS * 2u / SP_BLK; i++) block();  /* the reverb's tail */
     check(peak < 65536, "bounded");
     fseek(wf, 4, SEEK_SET); put32(36u + frames * 4u);

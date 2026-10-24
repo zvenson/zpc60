@@ -135,6 +135,7 @@
       <tr><td><span class="k">PLAY</span></td><td>run / stop</td></tr>
       <tr><td><span class="k red">REC</span></td><td>stopped: ARMED; playing: overdub on / off; <b>hold 2 s</b>: clear the loop</td></tr>
       <tr><td><span class="k">ENV</span></td><td>tapped: tap tempo · held + pads: <b>NOTE REPEAT</b></td></tr>
+      <tr><td><span class="k">HOME</span></td><td>from a page: the pads · on the pads: <b>TRACK MUTE</b> on / off (HOME blinks): white keys mute / unmute their pad, <span class="k">ENV</span> held + pad: <b>solo</b>; muted pads stay muted when you leave</td></tr>
       <tr><td><span class="k">GLO</span> held + white</td><td>1–8 <b>mute</b>, 9–16 <b>solo</b> ch 1–8</td></tr>
       <tr><td><span class="k">EDIT</span> held + <span class="k">OCT−</span></td><td><b>undo</b> the last clear / erase / copy (again: redo)</td></tr>
       <tr><td><span class="k">FX</span> held + white 1–4</td><td><b>punch-in</b>: roll 1/8 · roll 1/16 · reverse · tape stop; <span class="k">OCT−</span> / <span class="k">OCT+</span>: reverb / echo throw</td></tr>
@@ -169,6 +170,7 @@
       <tr><td><span class="k">LFO</span></td><td>erasing (held + a pad)</td></tr>
       <tr><td><span class="k">SAVE</span></td><td>lit in song mode</td></tr>
       <tr><td><span class="k">OCT−</span> <span class="k">OCT+</span></td><td>bank A / B on the keys</td></tr>
+      <tr><td><span class="k">HOME</span></td><td>blinking: TRACK MUTE; the white keys lit while their pad is heard, glowing when muted</td></tr>
       <tr><td>White keys</td><td>flash when their pad sounds; <b>SEQ held</b>: the steps with a hit; <b>GLO held</b>: 1–8 the channels you hear, 9–16 the soloed</td></tr>
       <tr><td>Black keys</td><td>the loop playing lit, the next one blinking</td></tr>
     </table>
@@ -178,7 +180,7 @@
     <table>
       <tr><td>Big line</td><td>the selected pad and its sound (A01 KICK), or what just changed</td></tr>
       <tr><td>Top right</td><td>the tempo, with <b>ARMED</b>, <b>COUNT</b> or <b>REC</b> before it; below it the page</td></tr>
-      <tr><td>4 × 4 pads</td><td>the bank on the keys, pad 01 bottom left; red while it sounds, the selected one outlined</td></tr>
+      <tr><td>4 × 4 pads</td><td>the bank on the keys, pad 01 bottom left; red while it sounds, the selected one outlined, <b>dark: muted</b>, yellow ring: soloed</td></tr>
       <tr><td>Faders</td><td>beside the pads: channels 1–8, the four on the knobs white; M muted, S soloed</td></tr>
       <tr><td>A B</td><td>the bank on the keys</td></tr>
       <tr><td>M · L</td><td>MULTI PITCH · 16 LEVELS</td></tr>
@@ -228,7 +230,7 @@
     <table>
       <tr><td>Saved</td><td>by itself when stopped and 3 s after a change; <span class="k">SAVE</span> now</td></tr>
       <tr><td>Its own</td><td>zpc60 keeps its own save; it never reads zp12's (they share the flash: switching back and forth, the last one saving wins)</td></tr>
-      <tr><td>Not saved</td><td>mute / solo and the DJ filter</td></tr>
+      <tr><td>Not saved</td><td>TRACK MUTE, mute / solo and the DJ filter</td></tr>
       <tr><td>Undo</td><td><span class="k">EDIT</span> held + <span class="k">OCT−</span>: the last clear, copy or stopped erase</td></tr>
       <tr><td>RESET</td><td>GLO → SETUP: everything back to the factory, <b>all loops gone</b></td></tr>
       <tr><td>Rescue</td><td>no answer? Hold <span class="k">OCT−</span> while switching on: the USB rescue, then install again</td></tr>
