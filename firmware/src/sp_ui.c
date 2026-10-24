@@ -396,10 +396,9 @@ static void pad_at(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t k, int l
 
 /* HOME: the 4 x 4 pads of the bank (pad 1 bottom left, as on the old sampling sequencers), beside them the eight
  * channel faders, slim; a cap lights while its channel sounds, M muted, S soloed, the four on the knobs white */
-static void draw_deck(void)
+static void deck_rows(void)
 {
     uint32_t i, k0 = ui.sel / 16u * 16u;
-    cv_begin(232, 108, P_FRAME);
     cv_rect(0, 0, 158, 108, P_NAVY);            /* the pad field */
     for (i = 0; i < 16u; i++) {
         uint32_t k = k0 + i;
@@ -419,7 +418,6 @@ static void draw_deck(void)
         cv_text_on(166, 52, &FONT_S, c, P_INK, P_FRAME);
         cv_text_on(166, 72, &FONT_S, "ENV+PAD", P_INK2, P_FRAME);
         cv_text_on(166, 88, &FONT_S, "= SOLO", P_INK2, P_FRAME);
-        cv_blit(4, 100);
         return;
     }
     for (i = 0; i < 3u; i++)                    /* the scale behind the faders */
@@ -435,7 +433,18 @@ static void draw_deck(void)
         cv_rect(cx - 3, y + 2, 7, 1, on && !off ? RGB(140, 10, 10) : RGB(96, 92, 80));
         cv_text_on(cx - 3, 88, &FONT_S, n, solo ? P_TEAL : (sp_mute >> i) & 1u ? P_RED : knobbed ? P_INK : P_INK2, P_FRAME);
     }
-    cv_blit(4, 100);
+}
+
+static void draw_deck(void)                  /* (in two halves: the device's canvas holds 80 rows, this is 108) */
+{
+    uint32_t h;
+    for (h = 0; h < 108u; h += 54u) {
+        cv_begin(232, 54, P_FRAME);
+        cv_oy = -(int32_t)h;
+        deck_rows();
+        cv_oy = 0;
+        cv_blit(4, 100 + h);
+    }
 }
 
 /* a page open: under its tabs the 16 pads small, 1-8 below, 9-16 above */
@@ -452,12 +461,11 @@ static void draw_pads(void)
 
 /* SEQ held: the step grid in place of the faders and pads: the eight pads of the bank, 16 steps of the bar,
  * the pad on the keys bright, the playhead's column marked */
-static void draw_grid(void)
+static void grid_rows(void)
 {
     const sq_seg_t *g = &sq_seg[sq.seg % SQ_NSEG];
     uint32_t bank = ui.sel / 8u, r, i, t0 = ui.step_bar * SQ_BAR, ph = 0xFFFFu;
     uint32_t len = g->bars ? g->bars * SQ_BAR : SQ_BAR;
-    cv_begin(232, 108, P_NAVY);
     if (sq.playing && sq.countin <= 0) {
         uint32_t t = (sq.pos >> 16) % len;
         if (t >= t0 && t < t0 + SQ_BAR) ph = (t - t0) / 24u;
@@ -483,7 +491,18 @@ static void draw_grid(void)
                 cv_rect(x, y + 10, 10, 2, P_LED);
         }
     }
-    cv_blit(4, 100);
+}
+
+static void draw_grid(void)                  /* (in two halves: the device's canvas holds 80 rows, this is 108) */
+{
+    uint32_t h;
+    for (h = 0; h < 108u; h += 54u) {
+        cv_begin(232, 54, P_NAVY);
+        cv_oy = -(int32_t)h;
+        grid_rows();
+        cv_oy = 0;
+        cv_blit(4, 100 + h);
+    }
 }
 
 static void led(int32_t x, int32_t y, int on)
