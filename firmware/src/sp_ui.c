@@ -44,16 +44,36 @@ static const char *const UI_BACK_NAME[5] = {"6 S", "12 S", "30 S", "60 S", "OFF"
 #endif
 static const char ZP12_VERSION[] = ZP12_VER;
 
-enum { PG_HOME, PG_WAVE, PG_SOUND, PG_TRUNC, PG_OUT, PG_SFX, PG_FILT, PG_CHO, PG_DLY, PG_REV, PG_SEG, PG_SEG2, PG_SONG, PG_SETUP, PG_CLICK, PG_OUTPUT, PG_N };
+enum { PG_HOME, PG_WAVE, PG_SOUND, PG_TRUNC, PG_OUT, PG_SFX, PG_FILT, PG_CHO, PG_DLY, PG_REV, PG_SEG, PG_SEG2, PG_SONG, PG_SETUP, PG_CLICK, PG_OUTPUT,
+       PG_SAMPLE, PG_N };
 static const char *const PG_NAME[PG_N] = {"MIX", "WAVE", "SOUND", "TRUNC", "OUT", "SENDS", "FILTER", "CHORUS", "DELAY", "REVERB",
-                                          "LOOP", "TOOLS", "SONG", "SETUP", "CLICK", "OUTPUT"};
+                                          "LOOP", "TOOLS", "SONG", "SETUP", "CLICK", "OUTPUT", "SAMPLE"};
+#ifndef FELUCCA_UAI
+#define FELUCCA_UAI 0
+#endif
+#if FELUCCA_UAI
+/* the sampler (sp_sampler.c): its settings and state, here because the pages show them */
+static const uint16_t SMP_RATE[3] = {40000, 26040, 20000};
+static const char *const SMP_RATE_NAME[3] = {"40K", "26K", "20K"};
+static const char *const SMP_THR_NAME[7] = {"OFF", "-48", "-42", "-36", "-30", "-24", "-18"};
+static const int32_t SMP_LP[3] = {29786, 25854, 22872};   /* its low-pass: 1 - exp(-2 pi 0.42 rate / 44100), Q15 */
+enum { SM_IDLE, SM_ERASE, SM_WAIT, SM_REC, SM_DONE };
+static struct {
+    uint8_t state, rate, thr, mon, slot;         /* rate: SMP_RATE; thr: SMP_THR_NAME; mon 0..127: the input heard */
+    uint16_t len10;                              /* TIME, tenths of a second */
+    uint32_t off, end, erased, n, want;          /* the run [off, end), erased up to; samples taken, wanted */
+    uint32_t peak;                               /* the input meter (falls slowly) */
+} smp = {0, 0, 0, 80, 0, 20, 0, 0, 0, 0, 0, 0};
+static void smp_press(void);
+static uint32_t smp_room_samples(void);
+#endif
 /* buttons: the printed labels' matrix ids (as SLOOP's PANEL_DEFAULT); SEL is SLOOP's SCL */
 enum { B_OCTDN = 0, B_OCTUP = 1, B_FX = 2, B_SEL = 3, B_ENV = 4, B_LFO = 5, B_EDIT = 6, B_GLO = 7, B_HOME = 8,
        B_SAVE = 9, B_ARP = 10, B_SEQ = 11, B_PLAY = 12, B_REC = 13 };
 /* the page families (the button that opens them): their name, colour, pages; on a page the header says where
  * (EDIT > SOUND) and the tabs take the faders' place */
 static const char *const FAM_NAME[5] = {"MIX", "EDIT", "FX", "SEQ", "GLO"};
-static const uint8_t FAM_FIRST[5] = {PG_HOME, PG_WAVE, PG_FILT, PG_SEG, PG_SETUP}, FAM_N[5] = {1, 5, 4, 3, 3};
+static const uint8_t FAM_FIRST[5] = {PG_HOME, PG_WAVE, PG_FILT, PG_SEG, PG_SETUP}, FAM_N[5] = {1, 5, 4, 3, 3 + FELUCCA_UAI};
 static uint32_t fam_of(uint32_t pg) { return pg == PG_HOME ? 0u : pg <= PG_SFX ? 1u : pg <= PG_REV ? 2u : pg <= PG_SONG ? 3u : 4u; }
 static const char *const DTIME_NAME[6] = {"1/4", "1/8", "1/16", "1/32", "8T", "16T"};
 static const char *const CLICK_NAME[3] = {"OFF", "REC", "ON"};
@@ -66,6 +86,7 @@ static struct {
     uint8_t multi;                              /* ARP: 1 MULTI PITCH, 2 16 LEVELS */
     uint8_t env_used;                           /* ENV held: a pad pressed (NOTE REPEAT, not a tap) */
     uint8_t tmute;                              /* TRACK MUTE: the white keys mute / unmute their pads (HOME on HOME) */
+    uint8_t lfo_used;                           /* LFO held: a pad pressed (ERASE, not the SAMPLE page) */
     uint16_t env_bpm;                           /* the tempo before ENV's tap (back if it was NOTE REPEAT) */
     uint8_t shift;                              /* SEL pressed (lit): the knobs are the faders 5-8 */
     uint8_t steps;                              /* SEQ held: the step grid on the keys */
@@ -237,6 +258,20 @@ static void page_cols(char lab[4][8], char val[4][12])   /* (val: an own sample'
     case PG_OUTPUT:
         COL(0, "SMOOTH", cat(val[0], sp_smooth ? "ON" : "OFF"));
         break;
+#if FELUCCA_UAI
+    case PG_SAMPLE: {
+        char *q;
+        COL(0, "RATE", cat(val[0], SMP_RATE_NAME[smp.rate % 3u]));
+        q = num(val[1], smp.len10 / 10u, smp.len10 >= 100u ? 2u : 1u, 0);
+        *q++ = '.';
+        q = num(q, smp.len10 % 10u, 1, 0);
+        cat(q, "S");
+        cat(lab[1], "TIME");
+        COL(2, "THRESH", cat(val[2], SMP_THR_NAME[smp.thr % 7u]));
+        COL(3, "MON", num(val[3], smp.mon, 3, 0));
+        break;
+    }
+#endif
     default:
         break;
     }
@@ -345,6 +380,33 @@ static void draw_lcd(void)                      /* the LCD: big the state, below
         p = num(p, (int32_t)(t / SQ_BAR + 1u), t / SQ_BAR + 1u >= 10u ? 2u : 1u, 0);
         p = cat(p, ".");
         num(p, (int32_t)(t % SQ_BAR / SQ_PPQ + 1u), 1, 0);
+#if FELUCCA_UAI
+    } else if (ui.page == PG_SAMPLE) {            /* the sampler: what it does, the input meter under it */
+        uint32_t w = smp.peak > 32767u ? 32767u : smp.peak, b = 0;
+        while ((b + 1u) * (b + 1u) <= w) b++;    /* (a square root: the meter reads roughly in dB) */
+        if (smp.state == SM_ERASE) {
+            uint32_t need = ((smp.off + (smp.want + 1u) / 2u * 3u + 0xFFFu) & ~0xFFFu) - smp.off;
+            p = cat(big, "ERASE ");
+            p = num(p, (int32_t)((smp.erased - smp.off) * 100u / (need ? need : 1u)), 2, 0);
+            cat(p, "%");
+        } else if (smp.state == SM_WAIT) {
+            cat(big, "WAIT INPUT");
+        } else if (smp.state == SM_REC || smp.state == SM_DONE) {
+            uint32_t t10 = smp.n * 10u / SMP_RATE[smp.rate % 3u];
+            p = cat(big, "REC ");
+            p = num(p, (int32_t)(t10 / 10u), t10 >= 100u ? 2u : 1u, 0);
+            *p++ = '.';
+            p = num(p, (int32_t)(t10 % 10u), 1, 0);
+            cat(p, "S");
+        } else if (!uai.alt) {
+            cat(big, "NO USB AUDIO");
+        } else {
+            p = cat(big, "SAMPLE ");
+            pad_label(p, ui.sel);
+        }
+        cv_rect(10, 37, 212, 2, P_LCDDIM);
+        cv_rect(10, 37, (int32_t)(b * 212u / 181u), 2, P_LCDINK);
+#endif
     } else if (ui.tmute) {
         cat(big, "TRACK MUTE");
     } else {
@@ -559,7 +621,11 @@ static void ui_draw(void)
     uint32_t i, s, lit = 0, on = 0, bank = ui.sel / 16u;
     ui_note_played();
     sq.turn = sq.recording && (uint32_t)(fm1_ms - ui.turn_ms) < 600u ? 1u << ui.turn_pad : 0u;
-    if (ui.page != PG_HOME && UI_BACK_S[ui.back % 5u] && (uint32_t)(fm1_ms - ui.touch_ms) > UI_BACK_S[ui.back % 5u] * 1000u && !ui.steps)
+    if (ui.page != PG_HOME && UI_BACK_S[ui.back % 5u] && (uint32_t)(fm1_ms - ui.touch_ms) > UI_BACK_S[ui.back % 5u] * 1000u && !ui.steps
+#if FELUCCA_UAI
+        && !(ui.page == PG_SAMPLE && smp.state != SM_IDLE)
+#endif
+        )
         ui.page = PG_HOME;                      /* untouched: the knobs are the faders again */
     if (ui.arm && (uint32_t)(fm1_ms - ui.arm_ms) > 1500u)
         ui.arm = 0;
@@ -582,6 +648,15 @@ static void ui_draw(void)
         s = sig_of(ui.msg, sizeof ui.msg, s ^ 0x55u);
     if (ui.holding)
         s ^= ((fm1_ms - ui.hold_t0) / 40u + 1u) * 0x9E3779B1u;
+#if FELUCCA_UAI
+    if (ui.page == PG_SAMPLE) {                   /* the meter: up at once, down slowly */
+        uint32_t pk = uai.peak;
+        uai.peak = 0;
+        smp.peak = pk > smp.peak ? pk : smp.peak - smp.peak / 8u;
+        s ^= (smp.peak / 512u + 1u) * 2246822519u ^ smp.state * 977u ^ (smp.erased >> 12) * 31u ^ (smp.n / 4000u) * 7919u ^
+             uai.alt * 3u ^ smp.mon * 5u ^ smp.len10 * 13u ^ smp.rate * 17u ^ smp.thr * 19u;
+    }
+#endif
     if (s != ui.sig_lcd || ui.force) { ui.sig_lcd = s; draw_lcd(); }
     if (ui.steps) {
         const sq_seg_t *g = &sq_seg[sq.seg % SQ_NSEG];
@@ -772,6 +847,7 @@ static void key_down(uint32_t k, int erase)
     if (pad == 0xFFu)
         return;
     if (erase) {
+        ui.lfo_used = 1;
         ui.sel = (uint8_t)pad;
         if (!sq.playing) {
             sq_post(RQ_WIPE, pad, 0);
@@ -974,6 +1050,20 @@ static void knob(uint32_t n, int32_t d)
     case PG_OUTPUT:
         if (n == 0u) sp_smooth = one > 0;         /* (right: on, left: off) */
         break;
+#if FELUCCA_UAI
+    case PG_SAMPLE:
+        if (n == 3u) { smp.mon = (uint8_t)sp_clamp(smp.mon + dd, 0, 127); break; }
+        if (smp.state != SM_IDLE) break;         /* (not while a take runs) */
+        if (n == 0u) smp.rate = (uint8_t)sp_clamp(smp.rate + one, 0, 2);
+        if (n == 2u) smp.thr = (uint8_t)sp_clamp(smp.thr + one, 0, 6);
+        if (n <= 1u) {                           /* TIME: up to what the largest free run holds at this rate */
+            int32_t mx = (int32_t)(smp_room_samples() * 10u / SMP_RATE[smp.rate % 3u]);
+            if (mx < 1) mx = 1;
+            if (n == 1u) smp.len10 = (uint16_t)sp_clamp(smp.len10 + dd, 1, mx);
+            else if (smp.len10 > mx) smp.len10 = (uint16_t)mx;
+        }
+        break;
+#endif
     default:
         break;
     }
@@ -1037,7 +1127,10 @@ static void button(uint32_t b)
     case B_FX: page(ui.page >= PG_FILT && ui.page < PG_REV ? ui.page + 1u : PG_FILT); break;
     case B_SEQ: page(ui.page == PG_SEG ? PG_SEG2 : ui.page == PG_SEG2 ? PG_SONG : PG_SEG); break;
     case B_SAVE: ui.save_req = 1; ui_say("SAVED"); break;
-    case B_GLO: page(ui.page >= PG_SETUP && ui.page < PG_OUTPUT ? ui.page + 1u : PG_SETUP); break;
+    case B_GLO: page(ui.page >= PG_SETUP && ui.page < PG_SETUP + FAM_N[4] - 1u ? ui.page + 1u : PG_SETUP); break;
+#if FELUCCA_UAI
+    case B_LFO: page(PG_SAMPLE); break;          /* LFO tapped (zp12.c): the sampler */
+#endif
     case B_ENV: ui.env_bpm = sq.bpm10; ui.env_used = 0; tap_tempo(); break;   /* (held with pads: NOTE REPEAT) */
     case B_PLAY: sq_post(sq.playing ? RQ_STOP : RQ_PLAY, 0, 0); break;
     case B_REC: sq_post(RQ_REC, 0, 0); break;
@@ -1052,6 +1145,14 @@ static void button(uint32_t b)
 static uint32_t ui_holds(uint32_t held, uint32_t pressed, uint32_t released)
 {
     ui.held = held;
+#if FELUCCA_UAI
+    if (pressed & (1u << B_REC) && ui.page == PG_SAMPLE) {   /* the sampler's REC, not the loop's */
+        smp_press();
+        ui.touch_ms = fm1_ms;
+        pressed &= ~(1u << B_REC);
+        ui.rec_on = 0;
+    }
+#endif
     if (pressed & (1u << B_REC)) {
         ui.rec_prev = (uint8_t)(sq.recording | sq.rec_arm << 1 | sq.dub_wait << 2);
         ui.rec_t0 = fm1_ms;
@@ -1094,6 +1195,10 @@ static void ui_leds(uint32_t *btn, uint32_t *keys, uint32_t *glow)
     int blink = (sq.beat & 1u) == 0u, fam;
     if (sq.playing) b |= 1u << B_PLAY;
     if (sq.recording || ((sq.rec_arm || sq.dub_wait) && (fm1_ms / 250u) & 1u)) b |= 1u << B_REC;
+#if FELUCCA_UAI
+    if (smp.state == SM_REC || (smp.state != SM_IDLE && (fm1_ms / 150u) & 1u)) b |= 1u << B_REC;
+    else if (smp.state == SM_IDLE && ui.page == PG_SAMPLE) b &= ~(1u << B_REC);
+#endif
     if (ui.multi) b |= 1u << B_ARP;
     if (ui.shift) b |= 1u << B_SEL;
     if (sq.erase) b |= 1u << B_LFO;
