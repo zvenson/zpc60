@@ -10,25 +10,30 @@
  * a few seconds untouched, or with HOME. */
 
 /* the panel's colours */
-#define P_FRAME RGB(216, 206, 182)               /* the beige case */
-#define P_NAVY RGB(54, 52, 50)                   /* the dark pad panel */
-#define P_NAVY2 RGB(78, 75, 71)                  /* its raised parts: a tab, an empty step */
-#define P_NAVY3 RGB(104, 98, 90)                 /* ... of the pad the knobs edit */
-#define P_INK RGB(46, 44, 42)                   /* the case's printing */
-#define P_RED RGB(208, 30, 38)                   /* the red of the name and of REC */
-#define P_LCD RGB(184, 196, 132)
-#define P_LCDINK RGB(18, 26, 12)
-#define P_LCDDIM RGB(88, 102, 62)
-#define P_LED RGB(255, 36, 30)
-#define P_LEDOFF RGB(72, 26, 24)
-#define P_CAP RGB(226, 218, 198)
-#define P_SLOT RGB(16, 15, 14)
-#define P_PAD RGB(170, 164, 152)                 /* the grey rubber pads */
-#define P_PADHI RGB(196, 190, 178)
-#define P_RULE RGB(158, 150, 136)
-#define P_STEP RGB(240, 200, 60)
-static const uint16_t FAM_COL[5] = {RGB(54, 52, 50), RGB(232, 164, 52), RGB(64, 156, 142), RGB(208, 30, 38), RGB(168, 160, 146)};
-static const uint16_t FAM_INK[5] = {RGB(255, 255, 255), RGB(30, 24, 10), RGB(8, 30, 28), RGB(255, 255, 255), RGB(30, 28, 26)};
+#define P_FRAME RGB(214, 211, 203)               /* the case: a warm light grey */
+#define P_TOP RGB(36, 35, 38)                    /* the black name strip */
+#define P_NAVY RGB(140, 141, 146)                /* the pad field: a mid grey */
+#define P_NAVY2 RGB(112, 113, 119)               /* its sunk parts: an empty step */
+#define P_NAVY3 RGB(164, 165, 170)               /* ... of the pad the knobs edit */
+#define P_INK RGB(52, 51, 54)                    /* the case's printing */
+#define P_INK2 RGB(132, 129, 122)                /* ... faint */
+#define P_RED RGB(204, 30, 40)                   /* the red of the name, REC, OVER DUB */
+#define P_TEAL RGB(38, 104, 146)                 /* the number pad's blue */
+#define P_LCD RGB(52, 108, 224)                  /* the blue backlit LCD */
+#define P_LCDINK RGB(238, 244, 255)
+#define P_LCDDIM RGB(150, 184, 246)
+#define P_BEZEL RGB(30, 30, 34)
+#define P_LED RGB(255, 38, 32)
+#define P_LEDOFF RGB(168, 140, 136)
+#define P_CAP RGB(238, 228, 190)                 /* the cream keys */
+#define P_SLOT RGB(40, 40, 44)
+#define P_PAD RGB(98, 99, 104)                   /* the grey rubber pads */
+#define P_PADHI RGB(124, 125, 131)
+#define P_PADINK RGB(214, 215, 220)
+#define P_RULE RGB(222, 222, 226)                /* light printing on the grey */
+#define P_STEP RGB(244, 214, 112)
+static const uint16_t FAM_COL[5] = {RGB(36, 35, 38), P_TEAL, RGB(64, 150, 136), RGB(204, 30, 40), RGB(238, 228, 190)};
+static const uint16_t FAM_INK[5] = {RGB(255, 255, 255), RGB(255, 255, 255), RGB(255, 255, 255), RGB(255, 255, 255), RGB(40, 38, 34)};
 
 /* a page untouched this long: back to the faders (GLO > SETUP > BACK; 0: never) */
 static const uint8_t UI_BACK_S[5] = {6, 12, 30, 60, 0};
@@ -243,9 +248,9 @@ static uint32_t on_page(void) { return ui.page != PG_HOME; }   /* the knobs are 
 
 static void draw_head(void)                     /* the header: the name; on a page where you are (EDIT > SOUND) */
 {
-    cv_begin(240, 20, P_FRAME);
-    cv_text_on(6, 2, &FONT_S, "zpc60", P_RED, P_FRAME);
-    cv_text_on(7, 2, &FONT_S, "zpc60", P_RED, P_FRAME);   /* (bold: twice, a pixel apart) */
+    cv_begin(240, 20, P_TOP);
+    cv_text_on(6, 2, &FONT_S, "zpc60", P_RED, P_TOP);
+    cv_text_on(7, 2, &FONT_S, "zpc60", P_RED, P_TOP);   /* (bold: twice, a pixel apart) */
     if (on_page()) {
         uint32_t fm = fam_of(ui.page);
         char b[24], *p = cat(b, FAM_NAME[fm]);
@@ -254,9 +259,7 @@ static void draw_head(void)                     /* the header: the name; on a pa
         cv_text_on(58, 2, &FONT_S, b, FAM_INK[fm], FAM_COL[fm]);
         cv_text_on(59, 2, &FONT_S, b, FAM_INK[fm], FAM_COL[fm]);
     } else {
-        cv_text_on(56, 2, &FONT_S, "sampling sequencer", P_INK, P_FRAME);
-        cv_rect(206, 8, 30, 2, P_RED);
-        cv_rect(206, 11, 30, 1, P_INK);
+        cv_text_on(56, 2, &FONT_S, "sampling sequencer", RGB(206, 206, 210), P_TOP);
     }
     cv_blit(0, 0);
 }
@@ -267,8 +270,8 @@ static void draw_tabs(void)
     uint32_t fm = fam_of(ui.page), i, n = FAM_N[fm], tw = 224u / n;
     char b[24], *p = b;
     b[0] = 0;
-    cv_begin(232, 62, P_NAVY);
-    cv_text_on(8, 2, &FONT_L, FAM_NAME[fm], FAM_COL[fm], P_NAVY);
+    cv_begin(232, 62, P_TOP);
+    cv_text_on(8, 2, &FONT_L, FAM_NAME[fm], fm == 1u ? RGB(96, 166, 214) : FAM_COL[fm], P_TOP);
     if (fm == 1u) {                              /* EDIT: the pad and its sample */
         pad_label(p, ui.sel);
         p[3] = ' ';
@@ -279,15 +282,15 @@ static void draw_tabs(void)
         p = cat(p, "LOOP ");
         num(p, sq.seg + 1, sq.seg + 1u >= 10u ? 2u : 1u, 0);
     }
-    cv_text_on(224 - text_w(&FONT_S, b), 14, &FONT_S, b, C_WHITE, P_NAVY);
+    cv_text_on(224 - text_w(&FONT_S, b), 14, &FONT_S, b, C_WHITE, P_TOP);
     for (i = 0; i < n; i++) {
         uint32_t pg = FAM_FIRST[fm] + i;
         int32_t x = 4 + (int32_t)(i * tw);
         int cur = pg == ui.page;
         const char *nm = PG_NAME[pg];
-        cv_rect(x, 38, (int32_t)tw - 2, 20, cur ? FAM_COL[fm] : P_NAVY2);
-        cv_text_on(x + ((int32_t)tw - 2 - text_w(&FONT_S, nm)) / 2, 40, &FONT_S, nm, cur ? FAM_INK[fm] : P_RULE,
-                   cur ? FAM_COL[fm] : P_NAVY2);
+        cv_rect(x, 38, (int32_t)tw - 2, 20, cur ? FAM_COL[fm] : RGB(72, 71, 76));
+        cv_text_on(x + ((int32_t)tw - 2 - text_w(&FONT_S, nm)) / 2, 40, &FONT_S, nm, cur ? FAM_INK[fm] : RGB(176, 176, 182),
+                   cur ? FAM_COL[fm] : RGB(72, 71, 76));
     }
     cv_blit(4, 100);
 }
@@ -297,6 +300,8 @@ static void draw_frame(void)                    /* once: the light frame */
     lcd_fill(0, 20, 4, 220, P_FRAME);
     lcd_fill(236, 20, 4, 220, P_FRAME);
     lcd_fill(4, 98, 232, 2, P_FRAME);
+    lcd_fill(4, 208, 232, 6, P_FRAME);           /* (between the pads and the lights, and below them) */
+    lcd_fill(0, 236, 240, 4, P_FRAME);
 }
 
 static void draw_lcd(void)                      /* the LCD: big the state, below it the knobs' four columns */
@@ -304,7 +309,7 @@ static void draw_lcd(void)                      /* the LCD: big the state, below
     char big[24], small[24], lab[4][8], val[4][12], *p = big;
     uint32_t i, bpm = sq.bpm10;
     cv_begin(232, 78, P_FRAME);
-    cv_rect(0, 0, 232, 78, RGB(70, 76, 66));    /* the bezel */
+    cv_rect(0, 0, 232, 78, P_BEZEL);            /* the bezel */
     cv_rect(3, 3, 226, 72, P_LCD);
     small[0] = 0;
     if (ui.holding) {                           /* REC held: what letting go late does, and how long it still takes */
@@ -378,13 +383,14 @@ static int pad_muted(uint32_t k) { return (sq.pmute >> k) & 1u || (sq.psolo && !
 static void pad_at(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t k, int lit)
 {
     char l[4];
-    int off = pad_muted(k);                      /* TRACK MUTE: dark; soloed: a yellow ring */
-    uint16_t face = lit ? P_LED : off ? P_NAVY2 : P_PAD;
-    cv_rect(x - 1, y - 1, w + 2, h + 2, (sq.psolo >> k) & 1u ? P_STEP : k == ui.sel ? C_WHITE : P_SLOT);
+    int off = pad_muted(k);                      /* TRACK MUTE: dark with a red bar; soloed: a yellow ring */
+    uint16_t face = lit ? P_LED : off ? RGB(50, 50, 54) : P_PAD;
+    cv_rect(x - 1, y - 1, w + 2, h + 2, (sq.psolo >> k) & 1u ? P_STEP : k == ui.sel ? C_WHITE : RGB(78, 79, 84));
     cv_rect(x, y, w, h, face);
-    cv_rect(x + 2, y + 1, w - 4, 1, lit ? RGB(255, 150, 130) : off ? P_NAVY3 : P_PADHI);
+    cv_rect(x + 2, y + 1, w - 4, 1, lit ? RGB(255, 150, 130) : off ? RGB(66, 66, 70) : P_PADHI);
+    cv_rect(x, y + h - 2, w, 2, off && !lit ? P_RED : lit ? RGB(200, 20, 20) : RGB(84, 85, 90));
     pad_label(l, k);
-    cv_text_on(x + (w - 16) / 2, y + (h - 16) / 2, &FONT_S, l + 1, lit ? C_WHITE : off ? P_RULE : P_INK, face);
+    cv_text_on(x + (w - 16) / 2, y + (h - 16) / 2, &FONT_S, l + 1, lit ? C_WHITE : off ? RGB(120, 120, 126) : P_PADINK, face);
 }
 
 /* HOME: the 4 x 4 pads of the bank (pad 1 bottom left, as on the old sampling sequencers), beside them the eight
@@ -392,13 +398,31 @@ static void pad_at(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t k, int l
 static void draw_deck(void)
 {
     uint32_t i, k0 = ui.sel / 16u * 16u;
-    cv_begin(232, 108, P_NAVY);
+    cv_begin(232, 108, P_FRAME);
+    cv_rect(0, 0, 158, 108, P_NAVY);            /* the pad field */
     for (i = 0; i < 16u; i++) {
         uint32_t k = k0 + i;
         pad_at(6 + (int32_t)(i % 4u) * 38, 4 + (int32_t)(3u - i / 4u) * 26, 34, 22, k, (int32_t)(fm1_ms - ui.hit_ms[k]) < 110);
     }
+    if (ui.tmute) {                              /* TRACK MUTE: its name where the faders are, and how to solo */
+        uint32_t n = 0;
+        char c[8];
+        for (i = 0; i < 32u; i++) n += pad_muted(i);
+        cv_rect(162, 4, 66, 40, P_RED);
+        cv_text_on(166, 6, &FONT_S, "TRACK", C_WHITE, P_RED);
+        cv_text_on(167, 6, &FONT_S, "TRACK", C_WHITE, P_RED);
+        cv_text_on(166, 24, &FONT_S, "MUTE", C_WHITE, P_RED);
+        cv_text_on(167, 24, &FONT_S, "MUTE", C_WHITE, P_RED);
+        num(c, (int32_t)n, n >= 10u ? 2u : 1u, 0);
+        cat(c + (n >= 10u ? 2 : 1), " OFF");
+        cv_text_on(166, 52, &FONT_S, c, P_INK, P_FRAME);
+        cv_text_on(166, 72, &FONT_S, "ENV+PAD", P_INK2, P_FRAME);
+        cv_text_on(166, 88, &FONT_S, "= SOLO", P_INK2, P_FRAME);
+        cv_blit(4, 100);
+        return;
+    }
     for (i = 0; i < 3u; i++)                    /* the scale behind the faders */
-        cv_rect(163, 8 + (int32_t)i * 36, 64, 1, P_NAVY2);
+        cv_rect(163, 8 + (int32_t)i * 36, 64, 1, RGB(186, 183, 175));
     for (i = 0; i < SP_NCH; i++) {
         int32_t cx = 167 + (int32_t)i * 8, y = 6 + (int32_t)((127u - ui.mix[i]) * 72u / 127u);
         int on = (int32_t)(fm1_ms - ui.chan_ms[i]) < 90 && sp_ch[i].on;
@@ -406,8 +430,9 @@ static void draw_deck(void)
         int solo = (sp_solo >> i) & 1u, off = sp_solo ? !solo : (int)((sp_mute >> i) & 1u);
         char n[2] = {(char)(solo ? 'S' : (sp_mute >> i) & 1u ? 'M' : '1' + i), 0};
         cv_rect(cx, 6, 1, 76, P_SLOT);
-        cv_rect(cx - 3, y, 7, 4, on && !off ? P_LED : off ? P_NAVY3 : knobbed ? C_WHITE : P_CAP);
-        cv_text_on(cx - 3, 88, &FONT_S, n, solo ? P_STEP : (sp_mute >> i) & 1u ? P_LED : knobbed ? C_WHITE : P_RULE, P_NAVY);
+        cv_rect(cx - 3, y, 7, 5, on && !off ? P_LED : off ? RGB(120, 118, 112) : P_CAP);
+        cv_rect(cx - 3, y + 2, 7, 1, on && !off ? RGB(140, 10, 10) : RGB(96, 92, 80));
+        cv_text_on(cx - 3, 88, &FONT_S, n, solo ? P_TEAL : (sp_mute >> i) & 1u ? P_RED : knobbed ? P_INK : P_INK2, P_FRAME);
     }
     cv_blit(4, 100);
 }
@@ -449,7 +474,7 @@ static void draw_grid(void)
         cv_text_on(2, y - 3, &FONT_S, l, k == ui.sel ? C_WHITE : P_RULE, P_NAVY);
         for (i = 0; i < 16u; i++) {
             int32_t x = 30 + (int32_t)i * 12 + (int32_t)(i / 4u) * 2;
-            uint16_t c = (row >> i) & 1u ? (k == ui.sel ? P_STEP : P_FRAME) : (k == ui.sel ? P_NAVY3 : P_NAVY2);
+            uint16_t c = (row >> i) & 1u ? (k == ui.sel ? P_STEP : P_CAP) : (k == ui.sel ? P_NAVY3 : P_NAVY2);
             cv_rect(x, y, 10, 10, c);
             if ((lks >> i) & 1u)                 /* a hit with its own TUNE / DECAY / CUT: a dot */
                 cv_rect(x + 3, y + 3, 4, 4, P_RED);
@@ -470,24 +495,24 @@ static void draw_leds(void)                     /* banks A, B (on the keys), MUL
 {
     uint32_t i;
     int blink = (sq.beat & 1u) == 0u;
-    cv_begin(232, 22, P_NAVY);
+    cv_begin(232, 22, P_FRAME);
     for (i = 0; i < 2u; i++) {
         char b[2] = {(char)('A' + i), 0};
         led(4 + (int32_t)i * 24, 8, i == ui.pair);
-        cv_text_on(12 + (int32_t)i * 24, 3, &FONT_S, b, P_FRAME, P_NAVY);
+        cv_text_on(12 + (int32_t)i * 24, 3, &FONT_S, b, P_INK, P_FRAME);
     }
     led(52, 8, ui.multi == 1u);
-    cv_text_on(60, 3, &FONT_S, "M", P_FRAME, P_NAVY);
+    cv_text_on(60, 3, &FONT_S, "M", P_INK, P_FRAME);
     led(72, 8, ui.multi == 2u);
-    cv_text_on(80, 3, &FONT_S, "L", P_FRAME, P_NAVY);
+    cv_text_on(80, 3, &FONT_S, "L", P_INK, P_FRAME);
     led(92, 8, sq.song_mode);
-    cv_text_on(100, 3, &FONT_S, "S", P_FRAME, P_NAVY);
+    cv_text_on(100, 3, &FONT_S, "S", P_INK, P_FRAME);
     led(112, 8, sq.nr != 0u);
-    cv_text_on(120, 3, &FONT_S, "NR", P_FRAME, P_NAVY);
+    cv_text_on(120, 3, &FONT_S, "NR", P_INK, P_FRAME);
     led(148, 8, sq.playing && (blink || sq.countin > 0));
-    cv_text_on(156, 3, &FONT_S, "RUN", P_FRAME, P_NAVY);
+    cv_text_on(156, 3, &FONT_S, "RUN", P_INK, P_FRAME);
     led(192, 8, sq.recording || ((sq.rec_arm || sq.dub_wait) && blink));
-    cv_text_on(200, 3, &FONT_S, "REC", P_RED, P_NAVY);
+    cv_text_on(200, 3, &FONT_S, "REC", P_RED, P_FRAME);
     cv_blit(4, 214);
 }
 
@@ -1144,21 +1169,21 @@ static void ui_splash(uint32_t t)
 {
     uint32_t i, lit = 0, n = t < 1300u ? t * 232u / 1300u : 232u, flash = t >= 1850u && t < 1990u;
     char b[32];                                  /* the longest: "sampling sequencer  " + the version */
-    cv_begin(240, 20, P_NAVY);                   /* the top: SAMPLING and its LED, the rate */
+    cv_begin(240, 20, P_TOP);                    /* the top: SAMPLING and its LED, the rate */
     if (t < 1300u) {
-        cv_text_on(8, 2, &FONT_S, "SAMPLING", P_FRAME, P_NAVY);
+        cv_text_on(8, 2, &FONT_S, "SAMPLING", P_FRAME, P_TOP);
         if ((t / 250u) & 1u) cv_rect(84, 7, 7, 7, P_LED);
         num(b, (int32_t)(n * 40000u / 232u), 5, 0);   /* (the samples taken: one second's worth) */
-        cv_text_on(232 - text_w(&FONT_S, b), 2, &FONT_S, b, P_RULE, P_NAVY);
+        cv_text_on(232 - text_w(&FONT_S, b), 2, &FONT_S, b, P_RULE, P_TOP);
     } else {
-        cv_text_on(8, 2, &FONT_S, "12 BIT  40 KHZ", P_RULE, P_NAVY);
+        cv_text_on(8, 2, &FONT_S, "12 BIT  40 KHZ", P_RULE, P_TOP);
     }
     cv_blit(0, 0);
     cv_begin(232, 112, flash ? P_LCDINK : P_LCD);   /* the LCD: the wave coming in, then the name over it */
-    cv_rect(0, 0, 232, 3, RGB(70, 76, 66));
+    cv_rect(0, 0, 232, 3, P_BEZEL);
     for (i = 0; i < n; i++) {                     /* the wave as stairs: each step, and the rise to it */
         int32_t v = splash_kick(i), u = i ? splash_kick(i - 1u) : v, lo = v < u ? v : u, hi = v < u ? u : v;
-        cv_rect((int32_t)i, 56 - hi, 2, hi - lo + 2, t < 1300u ? P_LCDINK : RGB(150, 162, 124));
+        cv_rect((int32_t)i, 56 - hi, 2, hi - lo + 2, t < 1300u ? P_LCDINK : RGB(96, 146, 236));
     }
     if (t < 1300u)
         cv_rect((int32_t)n, 8, 2, 96, P_RED);    /* the write head */
@@ -1193,7 +1218,7 @@ static void ui_splash(uint32_t t)
     cv_blit(4, 136);
     cv_begin(240, 58, P_NAVY);
     if (t >= 2100u)
-        cv_text_on(120 - text_w(&FONT_S, "based on zp12, SLOOP + Felucca") / 2, 30, &FONT_S, "based on zp12, SLOOP + Felucca", P_RULE, P_NAVY);
+        cv_text_on(120 - text_w(&FONT_S, "zp12 + SLOOP + Felucca") / 2, 30, &FONT_S, "zp12 + SLOOP + Felucca", P_RULE, P_NAVY);
     cv_blit(0, 182);
     lcd_sync();
 }

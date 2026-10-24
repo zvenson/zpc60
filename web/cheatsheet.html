@@ -8,12 +8,12 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   @page { size: A4 landscape; margin: 0; }
-  html, body { margin: 0; background: #e4dccb; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { margin: 0; background: #e2dfd8; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   @media print { html, body { background: none; } }
 </style>
 <style id="cs-style">
-  .cs { --frame: #d8ceb6; --frame2: #c2b79d; --navy: #363432; --navy2: #2a2826; --ink: #2e2c2a; --red: #d01e26; --led: #ff241e;
-          --lcd: #b8c484; --lcdink: #12190c; --paper: #e4dccb; --txt: #ece6da; --dim: #b3aa98; }
+  .cs { --frame: #d6d3cb; --frame2: #bdb9af; --navy: #3a393d; --navy2: #2a292c; --ink: #343336; --red: #cc1e28; --led: #ff261e;
+          --lcd: #346ce0; --lcdink: #eef4ff; --paper: #e2dfd8; --txt: #ecebe8; --dim: #b0afb4; }
   .cs * { box-sizing: border-box; }
   .cs { font: 10.2px/1.33 "Helvetica Neue", Arial, sans-serif; color: var(--ink); }
   .cs .sheet { width: 297mm; min-height: 210mm; margin: 0 auto; padding: 6mm 8mm 5mm; background: var(--frame);
@@ -22,7 +22,7 @@
   .cs .mark { font: 900 30px/1 "Helvetica Neue", Arial, sans-serif; letter-spacing: -1px; color: var(--red); }
   .cs .sub { font-size: 15px; color: var(--ink); font-style: italic; }
   .cs .rule { flex: 1; height: 5px; border-top: 1.5px solid var(--red); border-bottom: 1.5px solid var(--ink); align-self: center; }
-  .cs .ver { font-size: 10px; color: #6a604e; }
+  .cs .ver { font-size: 10px; color: #5e5c58; }
   .cs .grid { display: grid; grid-template-columns: 1.05fr 1fr 1fr; gap: 6px; }
   .cs .box { background: var(--navy); color: var(--txt); border-radius: 5px; overflow: hidden; }
   .cs .box h2 { margin: 0; padding: 3px 8px 2px; background: var(--frame); color: var(--ink); font: italic 400 15px/1.2 Georgia, "Times New Roman", serif;
@@ -30,27 +30,27 @@
   .cs .box h2::after { content: ""; flex: 1; height: 3px; border-top: 1px solid var(--red); border-bottom: 1px solid var(--ink); }
   .cs .in { padding: 5px 8px 6px; }
   .cs table { border-collapse: collapse; width: 100%; }
-  .cs td { padding: 1.6px 4px 1.6px 0; vertical-align: top; border-bottom: 1px solid rgba(179, 170, 152, 0.18); }
+  .cs td { padding: 1.6px 4px 1.6px 0; vertical-align: top; border-bottom: 1px solid rgba(176, 175, 180, 0.18); }
   .cs td:first-child { white-space: nowrap; color: #fff; font-weight: 700; width: 1%; padding-right: 7px; }
   .cs tr:last-child td { border-bottom: 0; }
   .cs b, .cs .k { color: #fff; }
-  .cs .k { display: inline-block; padding: 0 4px; border-radius: 3px; background: #c9c0ae; color: #1e1c1a; font-weight: 800; font-size: 9.4px; line-height: 13px; }
+  .cs .k { display: inline-block; padding: 0 4px; border-radius: 3px; background: #eee4be; color: #2a2826; font-weight: 800; font-size: 9.4px; line-height: 13px; }
   .cs .k.red { background: var(--led); color: #fff; }
-  .cs .k.blk { background: #121110; color: #fff; border: 1px solid #c9c0ae; }
+  .cs .k.blk { background: #121110; color: #fff; border: 1px solid #eee4be; }
   .cs .dim { color: var(--dim); }
-  .cs .lcd { background: var(--lcd); color: var(--lcdink); border: 3px solid #4a4640; border-radius: 3px; padding: 3px 6px;
+  .cs .lcd { background: var(--lcd); color: var(--lcdink); border: 3px solid #1e1e22; border-radius: 3px; padding: 3px 6px;
          font: 700 11px/1.3 "Courier New", monospace; margin: 4px 0; }
   .cs ol { margin: 2px 0 0 15px; padding: 0; }
   .cs li { margin: 1.6px 0; }
   .cs .pads { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin: 3px 0 2px; }
-  .cs .pads span { background: #aaa498; color: #1e1c1a; text-align: center; border-radius: 2px; padding: 1px 0; font-size: 8.6px; font-weight: 700; }
-  .cs .pads span i { display: block; font-style: normal; color: #3a3632; font-weight: 400; font-size: 8px; }
+  .cs .pads span { background: #626368; color: #fff; text-align: center; border-radius: 2px; padding: 1px 0; font-size: 8.6px; font-weight: 700; }
+  .cs .pads span i { display: block; font-style: normal; color: #d6d7dc; font-weight: 400; font-size: 8px; }
   .cs .kb { display: flex; height: 40px; position: relative; margin: 3px 0 4px; }
   .cs .kb .w { flex: 1; background: #ecece6; border: 1px solid #121110; border-radius: 0 0 3px 3px; margin-right: -1px; font-size: 7.5px;
            color: #333; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 1px; }
   .cs .kb .b { position: absolute; top: 0; width: 3.6%; height: 24px; background: #121110; border-radius: 0 0 2px 2px; color: #ff8a80;
            font-size: 7px; text-align: center; line-height: 30px; }
-  .cs footer { margin-top: 4px; font-size: 8.2px; line-height: 1.25; color: #6a604e; display: flex; justify-content: space-between; gap: 16px; }
+  .cs footer { margin-top: 4px; font-size: 8.2px; line-height: 1.25; color: #5e5c58; display: flex; justify-content: space-between; gap: 16px; }
   .cs .banks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .cs .banks b.t { display: block; margin: 1px 0 0; font-size: 9px; letter-spacing: 1px; color: var(--dim); }
   .cs .sheet.p2 { margin-top: 10px; }
