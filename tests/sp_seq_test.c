@@ -54,7 +54,7 @@ int main(int argc, char **argv)
     wf = fopen(argc > 1 ? argv[1] : "build/host/zp12-seq.wav", "wb");
     fwrite("RIFF\0\0\0\0WAVEfmt \x10\0\0\0\x01\0\x02\0", 1, 24, wf);
     put32(SP_FS); put32(SP_FS * 4u); fwrite("\x04\0\x10\0data\0\0\0\0", 1, 12, wf);
-    for (i = 0; i < KIT_NWAVE; i++) { sp_wave[i].d = KIT_DATA + KIT_WAVE[i].off; sp_wave[i].n = KIT_WAVE[i].n; sp_wave[i].rate = 26040; }
+    for (i = 0; i < KIT_NWAVE; i++) { sp_wave[i].d = KIT_DATA + KIT_WAVE[i].off; sp_wave[i].n = KIT_WAVE[i].n; sp_wave[i].rate = KIT_RATE; }
     memcpy(sp_sound, KIT_PADS, sizeof sp_sound);
     sp_sound[1].send[2] = 70;                           /* the snare into the reverb, the clap into the delay */
     sp_sound[3].send[1] = 60;
@@ -288,7 +288,7 @@ int main(int argc, char **argv)
             djf.v = (int8_t)v[m];
             djf.res = m == 2u ? 127 : 40;               /* (the high-pass with the resonance up: still bounded) */
             for (i = 0; i < 300u; i++) block();          /* (the glide) */
-            sp_trigger(KIT_MOVED[4], 127);               /* (the hat: 2.0's pad 4, 2.1's pad 3) */
+            sp_trigger(2, 127);                          /* (the hat: A03) */
             for (i = 0; i < 200u; i++) {
                 memset(o, 0, sizeof o); sp_render(o);
                 for (j = 0; j < 2u * SP_BLK; j++) if (abs(o[j]) > pk[m]) pk[m] = abs(o[j]);

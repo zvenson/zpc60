@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-only
-"""zp12's factory kit: the 16 CC0 drum hits of assets/samples-cc0/KIT (SLOOP's built-in set, CC0 1.0),
-cut to a length that fits, faded, resampled to 12 bit at 26.04 kHz and packed (2 samples in 3 bytes),
-as build/gen/zp12_kit.h: the waves, and the 32 pads' default sounds (bank A and B the kit, C a dirtier
-copy lower at 45->33 and a piano (VCSL, CC0), D chords and sounds from SLOOP's hip-hop pack: two E-piano chords, a horn stab, vibes,
-a bass, scratches).
+"""zpc60's factory kit: the 16 CC0 drum hits of assets/samples-cc0/KIT (SLOOP's built-in set, CC0 1.0) and four
+sounds from SLOOP's hip-hop pack (an E-piano chord, a bass, a scratch, a snap), cut to a length that fits, faded,
+resampled to 12 bit at 40 kHz (the late-80s sampling sequencers' rate) and packed (2 samples in 3 bytes), as
+build/gen/zp12_kit.h: the waves, and the 32 pads' default sounds: bank A a whole kit on 16 pads, bank B its
+dirtier and retuned twins (some at 45->33, an octave or a fifth down).
 
   tools/gen_kit.py build/gen/zp12_kit.h
 
@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 
 KIT = Path(__file__).resolve().parents[1] / "assets" / "samples-cc0" / "KIT"
-RATE = 26040
+RATE = 40000
 # name, file, seconds kept, channel (0..7), decay, level, pan, cut, reso
 SOUNDS = [
     ("KICK", "10_kick_BDrumNew_hit_v5.wav", 0.55, 0, 110, 127, 0, 127, 0),
@@ -26,10 +26,10 @@ SOUNDS = [
     ("RIM", "12_rim_sidestick.wav", 0.16, 5, 90, 100, -10, 127, 0),
     ("CLAP", "13_clap_Clap_rr1.wav", 0.40, 3, 95, 110, 6, 127, 0),
     ("HAT", "14_hihat_HitC_v3.wav", 0.16, 2, 60, 90, 18, 127, 0),
-    ("OHAT", "15_ohat_HitO.wav", 0.55, 2, 100, 84, 18, 127, 0),       # (channel 3 with HAT: it chokes it)
+    ("OHAT", "15_ohat_HitO.wav", 0.45, 2, 100, 84, 18, 127, 0),       # (channel 3 with HAT: it chokes it)
     ("TOM L", "16_tomlo_TomL_HitS_v4.wav", 0.42, 4, 100, 112, -16, 127, 0),
     ("TOM H", "17_tomhi_TomH_HitS_v4.wav", 0.38, 4, 100, 108, 16, 127, 0),
-    ("CRASH", "18_crash_susCymb2_hit_f1.wav", 0.75, 6, 110, 80, -20, 127, 0),
+    ("CRASH", "18_crash_susCymb2_hit_f1.wav", 0.60, 6, 110, 80, -20, 127, 0),
     ("RIDE", "19_ride_susCymb2_stick_mf1.wav", 0.55, 6, 110, 76, 20, 127, 0),
     ("COWBL", "20_cowbell_Cowbell1_Normal_v3.wav", 0.26, 7, 100, 90, 10, 127, 0),
     ("TAMB", "00_Tamb1_Hit_v2_rr1_Mid.wav", 0.26, 7, 100, 84, -12, 127, 0),
@@ -96,36 +96,26 @@ HIP = Path(__file__).resolve().parents[1] / "assets" / "samples-cc0" / "HIPHOP"
 # name, [(file, root midi, note midi, delay ms)], seconds, channel, decay, level, pan, sends (cho, dly, rev)
 MELODIC = [
     ("EP Dm9", [("01_Ds3.wav", 51, 50, 0), ("01_Ds3.wav", 51, 53, 6), ("02_Cs4.wav", 61, 57, 11), ("02_Cs4.wav", 61, 60, 15),
-                ("02_Cs4.wav", 61, 64, 19)], 1.00, 7, 120, 88, 0, (20, 30, 40)),
-    ("EP Gm9", [("01_Ds3.wav", 51, 55, 0), ("02_Cs4.wav", 61, 58, 6), ("02_Cs4.wav", 61, 62, 11), ("02_Cs4.wav", 61, 65, 15),
-                ("02_Cs4.wav", 61, 69, 19)], 0.95, 7, 120, 86, 0, (20, 30, 40)),
-    ("HORNS", [("01_A3.wav", 57, 57, 0), ("03_Ds4.wav", 63, 62, 3), ("04_G4.wav", 67, 65, 6)], 0.70, 6, 100, 88, 10, (0, 20, 30)),
-    ("VIBES", [("01_C4.wav", 60, 60, 0)], 0.70, 6, 110, 100, -10, (30, 20, 40)),
-    ("BASS", [("04_A2.wav", 45, 45, 0)], 0.80, 0, 110, 92, 0, (0, 0, 0)),
+                ("02_Cs4.wav", 61, 64, 19)], 0.70, 7, 120, 88, 0, (20, 30, 40)),
+    ("BASS", [("04_A2.wav", 45, 45, 0)], 0.55, 0, 110, 92, 0, (0, 0, 0)),
     ("SCRCH", [("00_vinyl_scratch.wav", 60, 60, 0)], 0.27, 5, 127, 100, 0, (0, 0, 10)),
-    ("SPIN", [("01_vinyl_backspin.wav", 60, 60, 0)], 0.50, 5, 127, 90, 0, (0, 0, 20)),
     ("SNAP", [("03_perc_snap.wav", 60, 60, 0)], 0.30, 3, 100, 100, 12, (0, 10, 40)),
 ]
 
 
-PIANO = Path(__file__).resolve().parents[1] / "assets" / "samples-cc0" / "PIANO"
-# C6-C8: VCSL's Steinway B (CC0), stored a 45->33 step high and played at 33 (the old trick: a third more time
-# in the same memory, grainier): two funky stabs, a ii-V (Cm9, F13), and one note for MULTI PITCH
-# name, [(file, root midi, note midi, delay ms)], seconds stored, channel, decay, level, pan, sends
-PIANOS = [
-    ("PNO Cm9", [("00_C3_m48.wav", 48, 48, 0), ("01_Gs3_m56.wav", 56, 58, 5), ("02_E4_m64.wav", 64, 63, 9),
-                 ("02_E4_m64.wav", 64, 67, 12), ("03_C5_m72.wav", 72, 74, 15)], 0.55, 7, 105, 92, -8, (15, 25, 35)),
-    ("PNO F13", [("00_C3_m48.wav", 48, 41, 0), ("00_C3_m48.wav", 48, 51, 5), ("01_Gs3_m56.wav", 56, 57, 9),
-                 ("02_E4_m64.wav", 64, 62, 12), ("02_E4_m64.wav", 64, 67, 15)], 0.55, 7, 105, 92, 8, (15, 25, 35)),
-    ("PIANO", [("01_Gs3_m56.wav", 56, 60, 0)], 0.45, 4, 110, 100, 0, (10, 0, 30)),
-]
 SLOW = 45 / 33
 
-# 2.1: the pads by bank, positions 1-8 (= channels 1-8; 1-2 have the resonant filter)
-LAYOUT_A = ["KICK", "SNARE", "HAT", "CLAP", "TOM H", "CRASH", "BASS", "PNO Cm9"]
-LAYOUT_B = ["KICK-7", "SNARE-7", "OHAT", "CLAP-7", "CONGA", "RIDE", "SCRCH", "PNO F13"]
-LAYOUT_C = ["TOM L", "RIM-7", "HAT-7", "SNAP", "CLAVE", "COWBL", "WOOD", "EP Dm9"]
-LAYOUT_D = ["SPIN", "RIM", "SHAKR", "PIANO", "VIBES", "HORNS", "TAMB", "EP Gm9"]
+# the pads: 16 a bank, pad 1 bottom left; a pad's channel is its place in the row pair (pad % 8: 1 and 9, 2 and 10 ...
+# share one, so they cut each other; 1-2 have the resonant filter). Bank A a whole kit, bank B its twins.
+# name, wave, tune, 45->33, pan (None: the wave's own)
+BANK_A = [("KICK", 0, 0, None), ("SNARE", 0, 0, None), ("HAT", 0, 0, None), ("CLAP", 0, 0, None),
+          ("TOM H", 0, 0, None), ("CRASH", 0, 0, None), ("BASS", 0, 0, None), ("EP Dm9", 0, 0, None),
+          ("TOM L", 0, 0, None), ("RIM", 0, 0, None), ("OHAT", 0, 0, None), ("SNAP", 0, 0, None),
+          ("CONGA", 0, 0, None), ("RIDE", 0, 0, None), ("SCRCH", 0, 0, None), ("COWBL", 0, 0, None)]
+BANK_B = [("KICK", -7, 1, None), ("SNARE", -7, 1, None), ("HAT", -7, 1, None), ("CLAP", -7, 1, None),
+          ("CLAVE", 0, 0, None), ("CONGA", -5, 0, -20), ("BASS", -5, 0, None), ("EP Dm9", -7, 0, None),
+          ("TOM L", -5, 0, None), ("RIM", -7, 1, None), ("SHAKR", 0, 0, None), ("TAMB", 0, 0, None),
+          ("WOOD", 0, 0, None), ("CONGA", 4, 0, 20), ("SCRCH", -5, 0, None), ("SNAP", -7, 1, None)]
 
 
 def chord(notes, secs, src=HIP, up=1.0, top=6500):
@@ -167,50 +157,34 @@ def main(dst):
         blobs += pack(s)
         while len(blobs) % 4:
             blobs.append(0)
-    for name, notes, secs, *_ in PIANOS:
-        s = chord(notes, secs, PIANO, SLOW, 9000)
-        waves.append((len(blobs), len(s), name))
-        blobs += pack(s)
-        while len(blobs) % 4:
-            blobs.append(0)
     rows = ",\n".join(",".join(str(b) for b in blobs[i:i + 32]) for i in range(0, len(blobs), 32))
     lines = [f"/* generated by tools/gen_kit.py: the CC0 kit (assets/samples-cc0/KIT), 12 bit at {RATE} Hz */",
              f"#define KIT_NWAVE {len(waves)}",
+             f"#define KIT_RATE {RATE}",
              f"#define KIT_BYTES {len(blobs)}",
              "static const uint8_t KIT_DATA[] __attribute__((aligned(4))) = {", rows, "};",
              "static const struct { uint32_t off, n; const char *name; } KIT_WAVE[KIT_NWAVE] = {"]
     lines += [f'    {{{o}, {n}, "{nm}"}},' for o, n, nm in waves]
     lines += ["};", "/* the 32 pads: wave, tune, fine, decay, level, pan, chan, flags, start, end, cut, reso */",
               "static const sp_sound_t KIT_PADS[32] = {"]
-    pads = []
     taper = lambda l: min(127, round(math.sqrt(127 * l)))   # LEVEL is squared in the engine (an audio taper): the same loudness
     SENDS = {"SNARE": (0, 0, 45), "CLAP": (0, 35, 30), "RIM": (0, 0, 25), "OHAT": (0, 0, 15), "TOM L": (0, 0, 20),
              "TOM H": (0, 0, 20), "CONGA": (0, 0, 25), "CRASH": (0, 0, 20)}   # a little space on some (factory taste)
+    base = {}
     for i, (name, f, secs, ch, dec, lvl, pan, cut, res) in enumerate(SOUNDS):
-        pads.append((i, 0, 0, dec, taper(lvl), pan, ch, 0, 0, 1000, cut, res, 0, *SENDS.get(name, (0, 0, 0))))
-    for i in range(5):                                 # C1-C5: bank A an octave down at 45->33, the filter on ch 1-2
-        name, f, secs, ch, dec, lvl, pan, cut, res = SOUNDS[i]
-        pads.append((i, -7, 0, min(127, dec + 10), taper(lvl), pan, ch, 2, 0, 1000, 90 if ch < 2 else 127, 40 if ch < 2 else 0, 0, 0, 0, 0))
-    for i, (name, notes, secs, ch, dec, lvl, pan, snd) in enumerate(PIANOS):   # C6-C8: the piano, at 33
-        pads.append((len(SOUNDS) + len(MELODIC) + i, 0, 0, dec, taper(lvl), pan, ch, 2, 0, 1000, 127, 0, 0, *snd))
-    for i, (name, notes, secs, ch, dec, lvl, pan, snd) in enumerate(MELODIC):   # D: the chords and sounds
-        pads.append((len(SOUNDS) + i, 0, 0, dec, taper(lvl), pan, ch, 0, 0, 1000, 127, 0, 0, *snd))
-    # 2.1: a pad's channel is its position (1-8 in every bank, as on the SP-1200): fader, mute, solo, the filter
-    # (1-2) and the choke follow the pad. The kit laid out by role: each position holds sounds that may cut each
-    # other (the three hats and the shaker on 3), bank A a groove of its own. KIT_MOVED: an old pad's new place
-    # (sp_store.c moves a 2.0 save's loops and pads with it).
-    old = [x[0] for x in SOUNDS] + [SOUNDS[i][0] + "-7" for i in range(5)] + [x[0] for x in PIANOS] + [x[0] for x in MELODIC]
-    layout = LAYOUT_A + LAYOUT_B + LAYOUT_C + LAYOUT_D
-    assert sorted(layout) == sorted(old) and len(layout) == 32, "the layout: every pad once"
-    newpads = []
-    for i, name in enumerate(layout):
-        p = list(pads[old.index(name)])
-        p[6] = i % 8
-        newpads.append(tuple(p))
-    lines += ["    {%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d}," % p if len(p) == 12 else
-              "    {%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, {%d, %d, %d}}," % p for p in newpads]
-    lines += ["};", "/* 2.0's pad i is 2.1's pad KIT_MOVED[i] (the kit laid out by position = channel) */",
-              "static const uint8_t KIT_MOVED[32] = {" + ", ".join(str(layout.index(n)) for n in old) + "};", ""]
+        base[name] = (i, dec, taper(lvl), pan, SENDS.get(name, (0, 0, 0)))
+    for i, (name, notes, secs, ch, dec, lvl, pan, snd) in enumerate(MELODIC):
+        base[name] = (len(SOUNDS) + i, dec, taper(lvl), pan, snd)
+    pads = []
+    for i, (name, tune, slow, pan) in enumerate(BANK_A + BANK_B):
+        w, dec, lvl, p0, snd = base[name]
+        ch = i % 8
+        flt = slow and ch < 2                          # the dirty twins on 1-2: the filter down a little
+        pads.append((w, tune, 0, min(127, dec + 10 * slow), lvl, p0 if pan is None else pan, ch, 2 * slow, 0, 1000,
+                     90 if flt else 127, 40 if flt else 0, 0, *snd))
+    lines += ["    {%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, {%d, %d, %d}}," % p for p in pads]
+    lines += ["};", "/* (zp12 2.0's pad layout; zpc60 never moves a save, its store is its own) */",
+              "static const uint8_t KIT_MOVED[32] = {" + ", ".join(str(i) for i in range(32)) + "};", ""]
     Path(dst).parent.mkdir(parents=True, exist_ok=True)
     Path(dst).write_text("\n".join(lines))
     secs = sum(n for _, n, _ in waves) / RATE

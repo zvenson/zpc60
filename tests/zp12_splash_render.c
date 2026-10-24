@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     uint32_t i, t, prev = 0, f = 0, k, frames = 0;
     char p[256];
     FILE *w;
-    for (i = 0; i < KIT_NWAVE; i++) { sp_wave[i].d = KIT_DATA + KIT_WAVE[i].off; sp_wave[i].n = KIT_WAVE[i].n; sp_wave[i].rate = 26040; }
+    for (i = 0; i < KIT_NWAVE; i++) { sp_wave[i].d = KIT_DATA + KIT_WAVE[i].off; sp_wave[i].n = KIT_WAVE[i].n; sp_wave[i].rate = KIT_RATE; }
     memcpy(sp_sound, KIT_PADS, sizeof sp_sound);
     ui_init();
     snprintf(p, sizeof p, "%s/splash.wav", dir);

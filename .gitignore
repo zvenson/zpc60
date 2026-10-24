@@ -3,3 +3,5 @@ build/
 __pycache__/
 fm1/catalog.json
 fm1/fw/
+experiments/adpcm/out/
+experiments/adpcm/adpcm

@@ -16,7 +16,7 @@ def main(sloopdx, pkg, version, out, own_site=False):
     import make_site                                    # sloopDX's own: product_of, strip_module
     raw = Path(pkg).read_bytes()
     product = make_site.product_of(raw)
-    if not re.fullmatch(r"FM-1_97\d", product) or b"FELUCCA-LOADER-1" not in raw:
+    if not re.fullmatch(r"FM-1_60\d\d", product) or b"FELUCCA-LOADER-1" not in raw:
         raise SystemExit(f"{pkg}: identity {product!r} or loader marker missing")
     html = (web / "index_pkg.html").read_text(encoding="utf-8")
     lib = make_site.strip_module((web / "fm1pkg.js").read_text(encoding="utf-8")) + "\n" + \

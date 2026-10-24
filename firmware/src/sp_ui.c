@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
-/* zp12: the screen and the controls, laid out as an 80s sampling drum machine's panel: a light frame, a big
- * two-line LCD (the state in large type, below it what KNOB 1-4 do now and their values), the eight channel
- * faders, the eight pads, the bank and transport LEDs. Held SEQ turns the faders and pads into the step grid.
+/* zpc60: the screen and the controls, laid out as a late-80s sampling sequencer's panel: a beige case, a big
+ * two-line LCD (the state in large type, below it what KNOB 1-4 do now and their values), the 4 x 4 pads of the
+ * bank (pad 1 bottom left) with the eight channel faders beside them, the bank and transport LEDs, red for what is
+ * live. Held SEQ turns the pads into the step grid.
  * Drawn in regions, each only when what it shows changed. No hardware here: zp12.c reads the panel and lights
  * the LEDs (ui_leds), the host test draws the same screens (tests/zp12_ui_test.c).
  *
@@ -9,22 +10,25 @@
  * a few seconds untouched, or with HOME. */
 
 /* the panel's colours */
-#define P_FRAME RGB(206, 208, 201)
-#define P_NAVY RGB(38, 62, 112)
-#define P_INK RGB(30, 48, 96)                   /* the frame's printing */
-#define P_RED RGB(200, 46, 50)
-#define P_LCD RGB(178, 190, 146)
-#define P_LCDINK RGB(16, 24, 14)
-#define P_LCDDIM RGB(84, 98, 70)
-#define P_LED RGB(255, 40, 32)
-#define P_LEDOFF RGB(70, 20, 22)
-#define P_CAP RGB(214, 216, 220)
-#define P_SLOT RGB(10, 12, 18)
-#define P_PAD RGB(18, 18, 20)
-#define P_RULE RGB(120, 140, 180)
+#define P_FRAME RGB(216, 206, 182)               /* the beige case */
+#define P_NAVY RGB(54, 52, 50)                   /* the dark pad panel */
+#define P_NAVY2 RGB(78, 75, 71)                  /* its raised parts: a tab, an empty step */
+#define P_NAVY3 RGB(104, 98, 90)                 /* ... of the pad the knobs edit */
+#define P_INK RGB(46, 44, 42)                   /* the case's printing */
+#define P_RED RGB(208, 30, 38)                   /* the red of the name and of REC */
+#define P_LCD RGB(184, 196, 132)
+#define P_LCDINK RGB(18, 26, 12)
+#define P_LCDDIM RGB(88, 102, 62)
+#define P_LED RGB(255, 36, 30)
+#define P_LEDOFF RGB(72, 26, 24)
+#define P_CAP RGB(226, 218, 198)
+#define P_SLOT RGB(16, 15, 14)
+#define P_PAD RGB(170, 164, 152)                 /* the grey rubber pads */
+#define P_PADHI RGB(196, 190, 178)
+#define P_RULE RGB(158, 150, 136)
 #define P_STEP RGB(240, 200, 60)
-static const uint16_t FAM_COL[5] = {RGB(38, 62, 112), RGB(236, 166, 44), RGB(52, 176, 160), RGB(200, 46, 50), RGB(150, 156, 172)};
-static const uint16_t FAM_INK[5] = {RGB(255, 255, 255), RGB(30, 24, 10), RGB(8, 30, 28), RGB(255, 255, 255), RGB(20, 24, 34)};
+static const uint16_t FAM_COL[5] = {RGB(54, 52, 50), RGB(232, 164, 52), RGB(64, 156, 142), RGB(208, 30, 38), RGB(168, 160, 146)};
+static const uint16_t FAM_INK[5] = {RGB(255, 255, 255), RGB(30, 24, 10), RGB(8, 30, 28), RGB(255, 255, 255), RGB(30, 28, 26)};
 
 /* a page untouched this long: back to the faders (GLO > SETUP > BACK; 0: never) */
 static const uint8_t UI_BACK_S[5] = {6, 12, 30, 60, 0};
@@ -132,7 +136,8 @@ static const char *sound_name(uint32_t k)
 {
     return wave_name(sp_sound[k].wave);
 }
-static void pad_label(char *b, uint32_t k) { b[0] = (char)('A' + k / 8u); b[1] = (char)('1' + k % 8u); b[2] = 0; }
+/* A01 .. A16, B01 .. B16: two banks of 16 pads (white keys 1-16; OCT+ bank B) */
+static void pad_label(char *b, uint32_t k) { b[0] = (char)('A' + k / 16u % 2u); b[1] = (char)('0' + k % 16u / 9u); b[2] = (char)('0' + (k % 16u + 1u) % 10u); b[3] = 0; }
 
 /* the four columns of the page: label and value of KNOB 1-4 ("" = nothing on that knob) */
 static void page_cols(char lab[4][8], char val[4][12])   /* (val: an own sample's name is 8 letters + 0) */
@@ -236,19 +241,19 @@ static uint32_t on_page(void) { return ui.page != PG_HOME; }   /* the knobs are 
 static void draw_head(void)                     /* the header: the name; on a page where you are (EDIT > SOUND) */
 {
     cv_begin(240, 20, P_FRAME);
-    cv_text_on(6, 2, &FONT_S, "zp12", P_INK, P_FRAME);
-    cv_text_on(7, 2, &FONT_S, "zp12", P_INK, P_FRAME);   /* (bold: twice, a pixel apart) */
+    cv_text_on(6, 2, &FONT_S, "zpc60", P_RED, P_FRAME);
+    cv_text_on(7, 2, &FONT_S, "zpc60", P_RED, P_FRAME);   /* (bold: twice, a pixel apart) */
     if (on_page()) {
         uint32_t fm = fam_of(ui.page);
         char b[24], *p = cat(b, FAM_NAME[fm]);
         if (FAM_N[fm] > 1u) { p = cat(p, " > "); cat(p, PG_NAME[ui.page]); }
-        cv_rect(44, 1, 194, 18, FAM_COL[fm]);
-        cv_text_on(50, 2, &FONT_S, b, FAM_INK[fm], FAM_COL[fm]);
-        cv_text_on(51, 2, &FONT_S, b, FAM_INK[fm], FAM_COL[fm]);
+        cv_rect(52, 1, 186, 18, FAM_COL[fm]);
+        cv_text_on(58, 2, &FONT_S, b, FAM_INK[fm], FAM_COL[fm]);
+        cv_text_on(59, 2, &FONT_S, b, FAM_INK[fm], FAM_COL[fm]);
     } else {
-        cv_text_on(48, 2, &FONT_S, "sampling drums", P_INK, P_FRAME);
-        cv_rect(170, 9, 66, 1, P_RED);
-        cv_rect(170, 11, 66, 1, P_INK);
+        cv_text_on(56, 2, &FONT_S, "sampling sequencer", P_INK, P_FRAME);
+        cv_rect(206, 8, 30, 2, P_RED);
+        cv_rect(206, 11, 30, 1, P_INK);
     }
     cv_blit(0, 0);
 }
@@ -263,10 +268,10 @@ static void draw_tabs(void)
     cv_text_on(8, 2, &FONT_L, FAM_NAME[fm], FAM_COL[fm], P_NAVY);
     if (fm == 1u) {                              /* EDIT: the pad and its sample */
         pad_label(p, ui.sel);
-        p[2] = ' ';
-        cat(p + 3, sound_name(ui.sel));
+        p[3] = ' ';
+        cat(p + 4, sound_name(ui.sel));
     } else if (fm == 4u) {                       /* GLO: the version */
-        cat(cat(p, "zp12 "), ZP12_VERSION);
+        cat(cat(p, "zpc60 "), ZP12_VERSION);
     } else if (fm == 3u) {
         p = cat(p, "LOOP ");
         num(p, sq.seg + 1, sq.seg + 1u >= 10u ? 2u : 1u, 0);
@@ -277,9 +282,9 @@ static void draw_tabs(void)
         int32_t x = 4 + (int32_t)(i * tw);
         int cur = pg == ui.page;
         const char *nm = PG_NAME[pg];
-        cv_rect(x, 38, (int32_t)tw - 2, 20, cur ? FAM_COL[fm] : RGB(52, 74, 124));
+        cv_rect(x, 38, (int32_t)tw - 2, 20, cur ? FAM_COL[fm] : P_NAVY2);
         cv_text_on(x + ((int32_t)tw - 2 - text_w(&FONT_S, nm)) / 2, 40, &FONT_S, nm, cur ? FAM_INK[fm] : P_RULE,
-                   cur ? FAM_COL[fm] : RGB(52, 74, 124));
+                   cur ? FAM_COL[fm] : P_NAVY2);
     }
     cv_blit(4, 100);
 }
@@ -309,7 +314,7 @@ static void draw_lcd(void)                      /* the LCD: big the state, below
         cat(big, ui.msg);
     } else if (ui.steps) {                      /* the step grid: the pad, the bar of the keys */
         pad_label(p, ui.sel);
-        p = cat(p + 2, " BAR ");
+        p = cat(p + 3, " BAR ");
         p = num(p, ui.step_bar + 1, 1, 0);
         p = cat(p, "/");
         num(p, sq_seg[sq.seg % SQ_NSEG].bars ? sq_seg[sq.seg % SQ_NSEG].bars : 1, 1, 0);
@@ -334,7 +339,7 @@ static void draw_lcd(void)                      /* the LCD: big the state, below
         num(p, (int32_t)(t % SQ_BAR / SQ_PPQ + 1u), 1, 0);
     } else {
         pad_label(p, ui.sel);
-        p = cat(p + 2, " ");
+        p = cat(p + 3, " ");
         cat(p, sound_name(ui.sel));
     }
     {   /* top right, small: the tempo (REC / COUNT / ARMED before it), below it the page; what does not fit
@@ -363,42 +368,50 @@ static void draw_lcd(void)                      /* the LCD: big the state, below
     cv_blit(4, 20);
 }
 
-static uint32_t fader_y(uint32_t lv) { return 44u - lv * 38u / 127u; }   /* the cap's top, in the region */
-
-static void draw_faders(void)                   /* the eight channel levels; a cap lights while it sounds */
+/* a pad: grey rubber, red while it sounds, the one the knobs edit outlined white; its number on it */
+static void pad_at(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t k, int lit)
 {
-    uint32_t i, k;
-    cv_begin(232, 62, RGB(38, 62, 112));
-    for (k = 0; k < 7u; k++)                    /* the scale lines behind the faders */
-        cv_rect(12, 6 + (int32_t)k * 7, 208, 1, P_RULE);
+    char l[4];
+    cv_rect(x - 1, y - 1, w + 2, h + 2, k == ui.sel ? C_WHITE : P_SLOT);
+    cv_rect(x, y, w, h, lit ? P_LED : P_PAD);
+    cv_rect(x + 2, y + 1, w - 4, 1, lit ? RGB(255, 150, 130) : P_PADHI);
+    pad_label(l, k);
+    cv_text_on(x + (w - 16) / 2, y + (h - 16) / 2, &FONT_S, l + 1, lit ? C_WHITE : P_INK, lit ? P_LED : P_PAD);
+}
+
+/* HOME: the 4 x 4 pads of the bank (pad 1 bottom left, as on the old sampling sequencers), beside them the eight
+ * channel faders, slim; a cap lights while its channel sounds, M muted, S soloed, the four on the knobs white */
+static void draw_deck(void)
+{
+    uint32_t i, k0 = ui.sel / 16u * 16u;
+    cv_begin(232, 108, P_NAVY);
+    for (i = 0; i < 16u; i++) {
+        uint32_t k = k0 + i;
+        pad_at(6 + (int32_t)(i % 4u) * 38, 4 + (int32_t)(3u - i / 4u) * 26, 34, 22, k, (int32_t)(fm1_ms - ui.hit_ms[k]) < 110);
+    }
+    for (i = 0; i < 3u; i++)                    /* the scale behind the faders */
+        cv_rect(163, 8 + (int32_t)i * 36, 64, 1, P_NAVY2);
     for (i = 0; i < SP_NCH; i++) {
-        int32_t cx = 14 + (int32_t)i * 29, y = (int32_t)fader_y(ui.mix[i]);
+        int32_t cx = 167 + (int32_t)i * 8, y = 6 + (int32_t)((127u - ui.mix[i]) * 72u / 127u);
         int on = (int32_t)(fm1_ms - ui.chan_ms[i]) < 90 && sp_ch[i].on;
         int knobbed = ui.page == PG_HOME && (i >= 4u) == (ui.shift != 0);
         int solo = (sp_solo >> i) & 1u, off = sp_solo ? !solo : (int)((sp_mute >> i) & 1u);
-        char n[2] = {(char)(solo ? 'S' : (sp_mute >> i) & 1u ? 'M' : '1' + i), 0};   /* M muted, S soloed */
-        cv_rect(cx - 1, 3, 3, 46, P_SLOT);
-        cv_rect(cx - 9, y, 19, 7, on && !off ? P_LED : off ? RGB(84, 88, 98) : P_CAP);
-        cv_rect(cx - 9, y + 3, 19, 1, on && !off ? RGB(120, 10, 10) : RGB(90, 90, 96));
-        cv_text_on(cx - 4, 47, &FONT_S, n, solo ? P_STEP : (sp_mute >> i) & 1u ? P_LED : knobbed ? C_WHITE : P_RULE, RGB(38, 62, 112));
+        char n[2] = {(char)(solo ? 'S' : (sp_mute >> i) & 1u ? 'M' : '1' + i), 0};
+        cv_rect(cx, 6, 1, 76, P_SLOT);
+        cv_rect(cx - 3, y, 7, 4, on && !off ? P_LED : off ? P_NAVY3 : knobbed ? C_WHITE : P_CAP);
+        cv_text_on(cx - 3, 88, &FONT_S, n, solo ? P_STEP : (sp_mute >> i) & 1u ? P_LED : knobbed ? C_WHITE : P_RULE, P_NAVY);
     }
     cv_blit(4, 100);
 }
 
-static void draw_pads(void)                     /* the eight pads of the bank the last hit was in, their labels */
+/* a page open: under its tabs the 16 pads small, 1-8 below, 9-16 above */
+static void draw_pads(void)
 {
-    uint32_t i, bank = ui.sel / 8u;
+    uint32_t i, k0 = ui.sel / 16u * 16u;
     cv_begin(232, 46, P_NAVY);
-    for (i = 0; i < 8u; i++) {
-        int32_t cx = 14 + (int32_t)i * 29;
-        uint32_t k = bank * 8u + i;
-        int lit = (int32_t)(fm1_ms - ui.hit_ms[k]) < 110;
-        char l[3];
-        cv_rect(cx - 11, 2, 23, 23, RGB(6, 6, 8));
-        cv_rect(cx - 10, 3, 21, 21, lit ? P_LED : P_PAD);
-        cv_rect(cx - 8, 5, 17, 2, lit ? RGB(255, 140, 120) : RGB(48, 48, 52));
-        pad_label(l, k);
-        cv_text_on(cx - 8, 28, &FONT_S, l, k == ui.sel ? C_WHITE : P_FRAME, P_NAVY);
+    for (i = 0; i < 16u; i++) {
+        uint32_t k = k0 + i;
+        pad_at(4 + (int32_t)(i % 8u) * 29, 3 + (int32_t)(1u - i / 8u) * 22, 25, 18, k, (int32_t)(fm1_ms - ui.hit_ms[k]) < 110);
     }
     cv_blit(4, 162);
 }
@@ -418,7 +431,7 @@ static void draw_grid(void)
     for (r = 0; r < 8u; r++) {
         uint32_t k = bank * 8u + r, row = 0, lks = 0;
         int32_t y = 4 + (int32_t)r * 13;
-        char l[3];
+        char l[4];
         for (i = 0; i < g->n; i++)
             if (g->ev[i].pad == k && g->ev[i].t >= t0 && g->ev[i].t < t0 + SQ_BAR) {
                 row |= 1u << ((g->ev[i].t - t0) / 24u);
@@ -427,8 +440,8 @@ static void draw_grid(void)
         pad_label(l, k);
         cv_text_on(2, y - 3, &FONT_S, l, k == ui.sel ? C_WHITE : P_RULE, P_NAVY);
         for (i = 0; i < 16u; i++) {
-            int32_t x = 24 + (int32_t)i * 12 + (int32_t)(i / 4u) * 2;
-            uint16_t c = (row >> i) & 1u ? (k == ui.sel ? P_STEP : P_FRAME) : (k == ui.sel ? RGB(70, 90, 140) : RGB(52, 74, 124));
+            int32_t x = 30 + (int32_t)i * 12 + (int32_t)(i / 4u) * 2;
+            uint16_t c = (row >> i) & 1u ? (k == ui.sel ? P_STEP : P_FRAME) : (k == ui.sel ? P_NAVY3 : P_NAVY2);
             cv_rect(x, y, 10, 10, c);
             if ((lks >> i) & 1u)                 /* a hit with its own TUNE / DECAY / CUT: a dot */
                 cv_rect(x + 3, y + 3, 4, 4, P_RED);
@@ -445,24 +458,24 @@ static void led(int32_t x, int32_t y, int on)
     cv_rect(x + 1, y, 4, 1, on ? RGB(255, 170, 160) : P_LEDOFF);
 }
 
-static void draw_leds(void)                     /* banks A-D (the pair on the keys), MULTI, SONG, RUN, REC */
+static void draw_leds(void)                     /* banks A, B (on the keys), MULTI, SONG, RUN, REC */
 {
     uint32_t i;
     int blink = (sq.beat & 1u) == 0u;
     cv_begin(232, 22, P_NAVY);
-    for (i = 0; i < 4u; i++) {
+    for (i = 0; i < 2u; i++) {
         char b[2] = {(char)('A' + i), 0};
-        led(4 + (int32_t)i * 24, 8, i / 2u == ui.pair);
+        led(4 + (int32_t)i * 24, 8, i == ui.pair);
         cv_text_on(12 + (int32_t)i * 24, 3, &FONT_S, b, P_FRAME, P_NAVY);
     }
-    led(100, 8, ui.multi);
-    cv_text_on(108, 3, &FONT_S, "M", P_FRAME, P_NAVY);
-    led(124, 8, sq.song_mode);
-    cv_text_on(132, 3, &FONT_S, "S", P_FRAME, P_NAVY);
-    led(150, 8, sq.playing && (blink || sq.countin > 0));
-    cv_text_on(158, 3, &FONT_S, "RUN", P_FRAME, P_NAVY);
-    led(190, 8, sq.recording || ((sq.rec_arm || sq.dub_wait) && blink));
-    cv_text_on(198, 3, &FONT_S, "REC", P_FRAME, P_NAVY);
+    led(60, 8, ui.multi);
+    cv_text_on(68, 3, &FONT_S, "M", P_FRAME, P_NAVY);
+    led(84, 8, sq.song_mode);
+    cv_text_on(92, 3, &FONT_S, "S", P_FRAME, P_NAVY);
+    led(120, 8, sq.playing && (blink || sq.countin > 0));
+    cv_text_on(128, 3, &FONT_S, "RUN", P_FRAME, P_NAVY);
+    led(170, 8, sq.recording || ((sq.rec_arm || sq.dub_wait) && blink));
+    cv_text_on(178, 3, &FONT_S, "REC", P_RED, P_NAVY);
     cv_blit(4, 214);
 }
 
@@ -486,7 +499,7 @@ static void ui_note_played(void)                /* the pads the sequencer or the
 
 static void ui_draw(void)
 {
-    uint32_t i, s, lit = 0, on = 0, bank = ui.sel / 8u;
+    uint32_t i, s, lit = 0, on = 0, bank = ui.sel / 16u;
     ui_note_played();
     sq.turn = sq.recording && (uint32_t)(fm1_ms - ui.turn_ms) < 600u ? 1u << ui.turn_pad : 0u;
     if (ui.page != PG_HOME && UI_BACK_S[ui.back % 5u] && (uint32_t)(fm1_ms - ui.touch_ms) > UI_BACK_S[ui.back % 5u] * 1000u && !ui.steps)
@@ -520,19 +533,19 @@ static void ui_draw(void)
         if (sq.playing) s ^= (((sq.pos >> 16) % len) / 24u + 1u) * 40503u;
         if (s != ui.sig_mid || ui.force) { ui.sig_mid = s; ui.sig_pad = 0; draw_grid(); }
     } else {
-        if (on_page()) {                         /* a page: its tabs */
+        for (i = 0; i < 16u; i++)
+            lit |= (uint32_t)((int32_t)(fm1_ms - ui.hit_ms[bank * 16u + i]) < 110) << i;
+        if (on_page()) {                         /* a page: its tabs, the pads small below */
             s = (0xAB00u ^ ui.page * 977u ^ ui.sel * 131u ^ sp_sound[ui.sel].wave * 7919u ^ sq.seg * 7u) & ~1u;
             if (s != ui.sig_mid || ui.force) { ui.sig_mid = s; draw_tabs(); }
-        } else {                                 /* the faders */
+            s = lit * 31u + ui.sel * 7919u + 1u;
+            if (s != ui.sig_pad || ui.force) { ui.sig_pad = s; draw_pads(); }
+        } else {                                 /* the pads and the faders */
             for (i = 0; i < SP_NCH; i++)
                 on |= (uint32_t)((int32_t)(fm1_ms - ui.chan_ms[i]) < 90 && sp_ch[i].on) << i;
-            s = sig_of(ui.mix, sizeof ui.mix, on * 2654435761u ^ ui.shift * 3u ^ (ui.page == PG_HOME) * 5u ^ (sp_mute | sp_solo << 8) * 40503u) | 1u;
-            if (s != ui.sig_mid || ui.force) { ui.sig_mid = s; draw_faders(); }
+            s = sig_of(ui.mix, sizeof ui.mix, on * 2654435761u ^ ui.shift * 3u ^ (sp_mute | sp_solo << 8) * 40503u ^ lit * 2246822519u ^ ui.sel * 7919u) | 1u;
+            if (s != ui.sig_mid || ui.force) { ui.sig_mid = s; ui.sig_pad = 0; draw_deck(); }
         }
-        for (i = 0; i < 8u; i++)
-            lit |= (uint32_t)((int32_t)(fm1_ms - ui.hit_ms[bank * 8u + i]) < 110) << i;
-        s = lit * 31u + ui.sel * 7919u + 1u;
-        if (s != ui.sig_pad || ui.force) { ui.sig_pad = s; draw_pads(); }
     }
     s = ui.pair + ui.multi * 2u + sq.playing * 4u + sq.recording * 8u + (sq.rec_arm | sq.dub_wait) * 16u + sq.song_mode * 32u +
         (sq.beat & 1u) * 64u + (sq.countin > 0) * 128u + 1u;
@@ -696,8 +709,8 @@ static void wave_set(uint32_t pad, uint32_t w)
     ui.sel = (uint8_t)(pad % SP_NSOUND);
     SP_HIT(ui.sel, 100, 0);                    /* (heard at once) */
     pad_label(m, ui.sel);
-    m[2] = ' ';
-    cat(m + 3, wave_name(w));
+    m[3] = ' ';
+    cat(m + 4, wave_name(w));
     ui_say(m);
 }
 static void wave_step(int32_t one)
@@ -1048,15 +1061,15 @@ static int32_t splash_kick(uint32_t i)            /* the sampled kick at x = i: 
 static void ui_splash(uint32_t t)
 {
     uint32_t i, lit = 0, n = t < 1300u ? t * 232u / 1300u : 232u, flash = t >= 1850u && t < 1990u;
-    char b[32];                                  /* the longest: "12-bit sampling drums  " + the version */
+    char b[32];                                  /* the longest: "sampling sequencer  " + the version */
     cv_begin(240, 20, P_NAVY);                   /* the top: SAMPLING and its LED, the rate */
     if (t < 1300u) {
         cv_text_on(8, 2, &FONT_S, "SAMPLING", P_FRAME, P_NAVY);
         if ((t / 250u) & 1u) cv_rect(84, 7, 7, 7, P_LED);
-        num(b, (int32_t)(n * 26040u / 232u), 5, 0);   /* (the samples taken: one second's worth) */
+        num(b, (int32_t)(n * 40000u / 232u), 5, 0);   /* (the samples taken: one second's worth) */
         cv_text_on(232 - text_w(&FONT_S, b), 2, &FONT_S, b, P_RULE, P_NAVY);
     } else {
-        cv_text_on(8, 2, &FONT_S, "12 BIT  26.04 KHZ", P_RULE, P_NAVY);
+        cv_text_on(8, 2, &FONT_S, "12 BIT  40 KHZ", P_RULE, P_NAVY);
     }
     cv_blit(0, 0);
     cv_begin(232, 112, flash ? P_LCDINK : P_LCD);   /* the LCD: the wave coming in, then the name over it */
@@ -1068,14 +1081,14 @@ static void ui_splash(uint32_t t)
     if (t < 1300u)
         cv_rect((int32_t)n, 8, 2, 96, P_RED);    /* the write head */
     {
-        static const char NAME[] = "zp12";
-        uint32_t k = t < 1350u ? 0u : t < 1550u ? 1u : t < 1850u ? 2u : 4u;
-        char nm[5];
+        static const char NAME[] = "zpc60";
+        uint32_t k = t < 1350u ? 0u : t < 1450u ? 1u : t < 1550u ? 2u : t < 1700u ? 3u : t < 1850u ? 4u : 5u;
+        char nm[6];
         for (i = 0; i < k; i++) nm[i] = NAME[i];
         nm[k] = 0;
         if (k) {
             int32_t sh = flash ? (int32_t)((t / 30u) & 1u) * 4 - 2 : 0;   /* (the crash shakes it) */
-            cv_big(116 - 80 + sh, 16, nm, 5, flash ? P_LCD : P_LCDINK);
+            cv_big(116 - 100 + sh, 16, nm, 5, flash ? P_LCD : P_LCDINK);
         }
     }
     cv_blit(4, 22);
@@ -1091,14 +1104,14 @@ static void ui_splash(uint32_t t)
         cv_rect(cx - 8, 5, 17, 2, (lit >> i) & 1u ? RGB(255, 140, 120) : RGB(48, 48, 52));
     }
     if (t >= 1900u) {
-        (void)sizeof(char[sizeof "12-bit sampling drums  " + sizeof ZP12_VER - 1u <= sizeof b ? 1 : -1]);   /* (fits, or no build) */
-        cat(cat(b, "12-bit sampling drums  "), ZP12_VERSION);
+        (void)sizeof(char[sizeof "sampling sequencer  " + sizeof ZP12_VER - 1u <= sizeof b ? 1 : -1]);   /* (fits, or no build) */
+        cat(cat(b, "sampling sequencer  "), ZP12_VERSION);
         cv_text_on(116 - text_w(&FONT_S, b) / 2, 28, &FONT_S, b, P_FRAME, P_NAVY);
     }
     cv_blit(4, 136);
     cv_begin(240, 58, P_NAVY);
     if (t >= 2100u)
-        cv_text_on(120 - text_w(&FONT_S, "based on SLOOP + Felucca") / 2, 30, &FONT_S, "based on SLOOP + Felucca", P_RULE, P_NAVY);
+        cv_text_on(120 - text_w(&FONT_S, "based on zp12, SLOOP + Felucca") / 2, 30, &FONT_S, "based on zp12, SLOOP + Felucca", P_RULE, P_NAVY);
     cv_blit(0, 182);
     lcd_sync();
 }

@@ -23,7 +23,7 @@
 typedef struct {                        /* a wave: where its packed samples are */
     const uint8_t *d;                   /* (flash, XIP) */
     uint32_t n;                         /* samples */
-    uint16_t rate;                      /* Hz it was recorded at: 26040 or 27500 */
+    uint16_t rate;                      /* Hz it was recorded at: the kit 40000, own samples 8000..48000 */
 } sp_wave_t;
 
 enum { SPF_REVERSE = 1, SPF_33 = 2 };   /* SPF_33: stored at 45 rpm, played at 33 1/3 (rate x 33/45) */

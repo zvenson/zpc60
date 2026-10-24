@@ -29,7 +29,7 @@ static volatile uint32_t fm1_ms;
 #define FELUCCA_UAC 0
 #define FELUCCA_UART 1                         /* the TRS MIDI IN jack (midi_uart.c, sloopDX's) */
 #ifndef FELUCCA_ID
-#define FELUCCA_ID "FM-1_970"                   /* package identity: 97N = zp12 build N */
+#define FELUCCA_ID "FM-1_6000"                  /* package identity: FM-1_60XY = zpc60 X.Y */
 #endif
 #include "usb.c"
 #include "midi_uart.c"
@@ -225,7 +225,7 @@ static void zp12_main(void)
     for (i = 0; i < KIT_NWAVE; i++) {
         sp_wave[i].d = KIT_DATA + KIT_WAVE[i].off;
         sp_wave[i].n = KIT_WAVE[i].n;
-        sp_wave[i].rate = 26040;
+        sp_wave[i].rate = KIT_RATE;
     }
     for (i = 0; i < SP_NSOUND; i++)
         sp_sound[i] = KIT_PADS[i];

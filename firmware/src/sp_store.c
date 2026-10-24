@@ -7,7 +7,7 @@
  * erase stops the audio for its ~40 ms a sector. */
 #define ZS_BASE 0xC4000u
 #define ZS_SLOT 0xA000u                          /* 40 KiB a copy */
-#define ZS_MAGIC 0x3231505Au                     /* "ZP12" */
+#define ZS_MAGIC 0x3036435Au                     /* "ZC60" (zpc60: never reads a zp12 save; the flash is shared) */
 #define ZS_VER 6u                                /* 6: SMOOTH; 5: LEVEL in an audio taper; 4: the UI's settings (BACK); 3: the hits'
                                                  * locks; 2: four songs (1: one) */
 #define ZS_KIT_ID ((uint16_t)(KIT_BYTES ^ KIT_NWAVE * 4099u ^ 0x0700u))   /* the factory kit the pads were saved with
