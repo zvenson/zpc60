@@ -11,10 +11,10 @@
  * polled: the panel's ~0.3 s init would leave the host's enumeration unanswered).
  * LDR_NAME / LDR_COLOUR: the firmware's name (at most 9 letters at size 4, more get smaller) and colour (RGB565). */
 #ifndef LDR_NAME
-#define LDR_NAME "ZP12"
+#define LDR_NAME "ZPC60"
 #endif
 #ifndef LDR_COLOUR
-#define LDR_COLOUR 0xFB47u               /* the hub's colour for it, #FF6A3D */
+#define LDR_COLOUR 0xD0E4u               /* zpc60 red, #D01E26 */
 #endif
 #define LDR_BG 0x1082u                   /* the hub's background, #151213 */
 #define LDR_INK 0xEF5Cu                  /* its text, #EFE8E1 */

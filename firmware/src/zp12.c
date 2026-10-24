@@ -205,7 +205,7 @@ static void fm1_fault(const fm1_crash_t *c)
     uint32_t i, t0, v[3] = {c->vec, c->pc, c->rets};
     fm1_audio_stop();
     lcd_fill(0, 0, 240, 240, RGB(160, 0, 0));
-    draw_text_box(0, 20, 240, &FONT_S, "ZP12 CRASH", C_WHITE, 1);
+    draw_text_box(0, 20, 240, &FONT_S, "ZPC60 CRASH", C_WHITE, 1);
     for (i = 0; i < 3u; i++) {
         uint32_t k;
         for (k = 0; k < 8u; k++) b[k] = "0123456789ABCDEF"[(v[i] >> (28u - 4u * k)) & 15u];
