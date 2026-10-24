@@ -383,14 +383,15 @@ static int pad_muted(uint32_t k) { return (sq.pmute >> k) & 1u || (sq.psolo && !
 static void pad_at(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t k, int lit)
 {
     char l[4];
-    int off = pad_muted(k);                      /* TRACK MUTE: dark with a red bar; soloed: a yellow ring */
-    uint16_t face = lit ? P_LED : off ? RGB(50, 50, 54) : P_PAD;
-    cv_rect(x - 1, y - 1, w + 2, h + 2, (sq.psolo >> k) & 1u ? P_STEP : k == ui.sel ? C_WHITE : RGB(78, 79, 84));
+    int off = pad_muted(k);                      /* TRACK MUTE: greyed out, an empty outline with a red bar; soloed: a yellow ring */
+    uint16_t face = lit ? P_LED : off ? P_NAVY3 : P_PAD;
+    cv_rect(x - 1, y - 1, w + 2, h + 2, (sq.psolo >> k) & 1u ? P_STEP : k == ui.sel ? C_WHITE : off ? RGB(190, 190, 196) : RGB(78, 79, 84));
     cv_rect(x, y, w, h, face);
-    cv_rect(x + 2, y + 1, w - 4, 1, lit ? RGB(255, 150, 130) : off ? RGB(66, 66, 70) : P_PADHI);
-    cv_rect(x, y + h - 2, w, 2, off && !lit ? P_RED : lit ? RGB(200, 20, 20) : RGB(84, 85, 90));
+    if (!off || lit)
+        cv_rect(x + 2, y + 1, w - 4, 1, lit ? RGB(255, 150, 130) : P_PADHI);
+    cv_rect(x, y + h - 3, w, 3, off && !lit ? P_RED : lit ? RGB(200, 20, 20) : RGB(84, 85, 90));
     pad_label(l, k);
-    cv_text_on(x + (w - 16) / 2, y + (h - 16) / 2, &FONT_S, l + 1, lit ? C_WHITE : off ? RGB(120, 120, 126) : P_PADINK, face);
+    cv_text_on(x + (w - 16) / 2, y + (h - 16) / 2 - 1, &FONT_S, l + 1, lit ? C_WHITE : off ? RGB(196, 197, 202) : P_PADINK, face);
 }
 
 /* HOME: the 4 x 4 pads of the bank (pad 1 bottom left, as on the old sampling sequencers), beside them the eight

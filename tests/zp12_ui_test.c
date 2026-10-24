@@ -179,7 +179,9 @@ int main(int argc, char **argv)
     { uint16_t b0 = sq.bpm10; ui.held = 1u << B_ENV; button(B_ENV); key_down(0, 0); ui.held = 0;
       if (sq.psolo != 1u || sq.bpm10 != b0 || sq.nr) { printf("zp12 ui: TRACK MUTE ENV + white 1 solo FAIL (%s)\n", ui.msg); return 1; } }
     sq.psolo = 0;
+    sq.pmute |= 1u << 10 | 1u << 15;                  /* (A11 and A16 too, for the picture) */
     fm1_ms += 20; ui.force = 1; ui_draw(); ppm("zpc60-trackmute");
+    sq.pmute = 4u;
     { uint32_t bt, kk, gg; ui_leds(&bt, &kk, &gg);
       if ((kk >> 4) & 1u || !((kk >> 0) & 1u) || !((gg >> 4) & 1u)) { printf("zp12 ui: TRACK MUTE keys FAIL\n"); return 1; } }
     key_down(4, 0);
