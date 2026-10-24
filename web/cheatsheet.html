@@ -3,26 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>zp12 cheat sheet</title>
-<meta name="description" content="zp12 for the M-VAVE FM-1: every key, button, knob page and the recording workflow on one page.">
+<title>zpc60 cheat sheet</title>
+<meta name="description" content="zpc60 for the M-VAVE FM-1: every key, button, knob page and the recording workflow on one page.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   @page { size: A4 landscape; margin: 0; }
-  html, body { margin: 0; background: #e9eae4; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { margin: 0; background: #e4dccb; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   @media print { html, body { background: none; } }
 </style>
 <style id="cs-style">
-  .cs { --frame: #cecfc9; --frame2: #b9bbb3; --navy: #263e70; --navy2: #1e3260; --ink: #1e3060; --red: #c82e32; --led: #ff2820;
-          --lcd: #b2be92; --lcdink: #10180e; --paper: #e9eae4; --txt: #e8ecf4; --dim: #a9b6d4; }
+  .cs { --frame: #d8ceb6; --frame2: #c2b79d; --navy: #363432; --navy2: #2a2826; --ink: #2e2c2a; --red: #d01e26; --led: #ff241e;
+          --lcd: #b8c484; --lcdink: #12190c; --paper: #e4dccb; --txt: #ece6da; --dim: #b3aa98; }
   .cs * { box-sizing: border-box; }
   .cs { font: 10.2px/1.33 "Helvetica Neue", Arial, sans-serif; color: var(--ink); }
   .cs .sheet { width: 297mm; min-height: 210mm; margin: 0 auto; padding: 6mm 8mm 5mm; background: var(--frame);
            border: 1px solid var(--frame2); }
   .cs header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 5px; }
-  .cs .mark { font: 900 30px/1 "Helvetica Neue", Arial, sans-serif; letter-spacing: -1px; color: var(--ink); font-style: italic; }
+  .cs .mark { font: 900 30px/1 "Helvetica Neue", Arial, sans-serif; letter-spacing: -1px; color: var(--red); }
   .cs .sub { font-size: 15px; color: var(--ink); font-style: italic; }
   .cs .rule { flex: 1; height: 5px; border-top: 1.5px solid var(--red); border-bottom: 1.5px solid var(--ink); align-self: center; }
-  .cs .ver { font-size: 10px; color: #4a587c; }
+  .cs .ver { font-size: 10px; color: #6a604e; }
   .cs .grid { display: grid; grid-template-columns: 1.05fr 1fr 1fr; gap: 6px; }
   .cs .box { background: var(--navy); color: var(--txt); border-radius: 5px; overflow: hidden; }
   .cs .box h2 { margin: 0; padding: 3px 8px 2px; background: var(--frame); color: var(--ink); font: italic 400 15px/1.2 Georgia, "Times New Roman", serif;
@@ -30,27 +30,29 @@
   .cs .box h2::after { content: ""; flex: 1; height: 3px; border-top: 1px solid var(--red); border-bottom: 1px solid var(--ink); }
   .cs .in { padding: 5px 8px 6px; }
   .cs table { border-collapse: collapse; width: 100%; }
-  .cs td { padding: 1.6px 4px 1.6px 0; vertical-align: top; border-bottom: 1px solid rgba(169, 182, 212, 0.18); }
+  .cs td { padding: 1.6px 4px 1.6px 0; vertical-align: top; border-bottom: 1px solid rgba(179, 170, 152, 0.18); }
   .cs td:first-child { white-space: nowrap; color: #fff; font-weight: 700; width: 1%; padding-right: 7px; }
   .cs tr:last-child td { border-bottom: 0; }
   .cs b, .cs .k { color: #fff; }
-  .cs .k { display: inline-block; padding: 0 4px; border-radius: 3px; background: #6f8fcf; color: #0e1a36; font-weight: 800; font-size: 9.4px; line-height: 13px; }
+  .cs .k { display: inline-block; padding: 0 4px; border-radius: 3px; background: #c9c0ae; color: #1e1c1a; font-weight: 800; font-size: 9.4px; line-height: 13px; }
   .cs .k.red { background: var(--led); color: #fff; }
-  .cs .k.blk { background: #0e1220; color: #fff; border: 1px solid #6f8fcf; }
+  .cs .k.blk { background: #121110; color: #fff; border: 1px solid #c9c0ae; }
   .cs .dim { color: var(--dim); }
-  .cs .lcd { background: var(--lcd); color: var(--lcdink); border: 3px solid #464c42; border-radius: 3px; padding: 3px 6px;
+  .cs .lcd { background: var(--lcd); color: var(--lcdink); border: 3px solid #4a4640; border-radius: 3px; padding: 3px 6px;
          font: 700 11px/1.3 "Courier New", monospace; margin: 4px 0; }
   .cs ol { margin: 2px 0 0 15px; padding: 0; }
   .cs li { margin: 1.6px 0; }
-  .cs .pads { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; margin: 3px 0 2px; }
-  .cs .pads span { background: #0e1220; color: #fff; text-align: center; border-radius: 2px; padding: 1px 0; font-size: 8.6px; font-weight: 700; }
-  .cs .pads span i { display: block; font-style: normal; color: var(--dim); font-weight: 400; font-size: 8px; }
+  .cs .pads { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin: 3px 0 2px; }
+  .cs .pads span { background: #aaa498; color: #1e1c1a; text-align: center; border-radius: 2px; padding: 1px 0; font-size: 8.6px; font-weight: 700; }
+  .cs .pads span i { display: block; font-style: normal; color: #3a3632; font-weight: 400; font-size: 8px; }
   .cs .kb { display: flex; height: 40px; position: relative; margin: 3px 0 4px; }
-  .cs .kb .w { flex: 1; background: #ecece6; border: 1px solid #0e1220; border-radius: 0 0 3px 3px; margin-right: -1px; font-size: 7.5px;
+  .cs .kb .w { flex: 1; background: #ecece6; border: 1px solid #121110; border-radius: 0 0 3px 3px; margin-right: -1px; font-size: 7.5px;
            color: #333; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 1px; }
-  .cs .kb .b { position: absolute; top: 0; width: 3.6%; height: 24px; background: #0e1220; border-radius: 0 0 2px 2px; color: #ff8a80;
+  .cs .kb .b { position: absolute; top: 0; width: 3.6%; height: 24px; background: #121110; border-radius: 0 0 2px 2px; color: #ff8a80;
            font-size: 7px; text-align: center; line-height: 30px; }
-  .cs footer { margin-top: 4px; font-size: 8.2px; line-height: 1.25; color: #4a587c; display: flex; justify-content: space-between; gap: 16px; }
+  .cs footer { margin-top: 4px; font-size: 8.2px; line-height: 1.25; color: #6a604e; display: flex; justify-content: space-between; gap: 16px; }
+  .cs .banks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cs .banks b.t { display: block; margin: 1px 0 0; font-size: 9px; letter-spacing: 1px; color: var(--dim); }
   .cs .sheet.p2 { margin-top: 10px; }
   @media print { .cs .sheet { border: 0; } .cs .sheet.p2 { margin-top: 0; break-before: page; } }
   @media screen and (max-width: 900px) { .cs .sheet { width: auto; min-height: 0; } .cs .grid { grid-template-columns: 1fr; } }
@@ -59,8 +61,8 @@
 <body>
 <!--cs--><div class="cs"><div class="sheet">
 <header>
-  <span class="mark">zp12</span><span class="sub">sampling drums</span><span class="rule"></span>
-  <span class="ver">firmware 2.4.3 for the M-VAVE FM-1 · zp12.designburgapps.com · 1 / 2</span>
+  <span class="mark">zpc60</span><span class="sub">sampling sequencer</span><span class="rule"></span>
+  <span class="ver">firmware 0.1 for the M-VAVE FM-1 · github.com/zvenson/zpc60 · 1 / 2</span>
 </header>
 
 <div class="grid">
@@ -68,42 +70,30 @@
   <div class="box"><h2>The keys</h2><div class="in">
     <div class="kb" id="kb"></div>
     <table>
-      <tr><td>White 1–8</td><td>pads of bank <b>A</b> (or <b>C</b>)</td></tr>
-      <tr><td>White 9–16</td><td>pads of bank <b>B</b> (or <b>D</b>)</td></tr>
-      <tr><td><span class="k">OCT+</span> <span class="k">OCT−</span></td><td>banks <b>C + D</b> / back to <b>A + B</b> (the LEDs A–D show which)</td></tr>
-      <tr><td><span class="k blk">black keys</span></td><td><b>loops 1–11</b> (12–16: SEQ → LOOP): stopped at once; playing: from the end of the loop (its key blinks, the LCD says <b>LOOP 3 NEXT</b>). The loop playing is lit.</td></tr>
-      <tr><td><span class="k">ARP</span></td><td><b>MULTI PITCH</b>: the last sound on all 27 keys, F4 (white 8) as tuned. ARP again: pads.</td></tr>
-      <tr><td>USB MIDI</td><td>notes 36–67 play pads A1–D8; Program Change 0–15 picks loop 1–16 (at the loop's end)</td></tr>
+      <tr><td>White 1–16</td><td>the <b>16 pads</b> of bank <b>A</b> (or <b>B</b>): white 1 = pad 01, white 16 = pad 16</td></tr>
+      <tr><td><span class="k">OCT+</span> <span class="k">OCT−</span></td><td>bank <b>B</b> / back to bank <b>A</b> (the LEDs A B show which)</td></tr>
+      <tr><td><span class="k blk">black keys</span></td><td><b>loops 1–11</b> (12–16: SEQ → LOOP): stopped at once; playing: from the end of the loop (its key blinks, the LCD says <b>LOOP 3 NEXT</b>)</td></tr>
+      <tr><td><span class="k">ENV</span> held + pads</td><td><b>NOTE REPEAT</b>: the pads held hit on every step of AUTO CORRECT (OFF: 1/16), swung; recording, they go in. Stopped: at once, then in tempo. ENV tapped: tap tempo</td></tr>
+      <tr><td><span class="k">ARP</span></td><td>PADS → <b>MULTI PITCH</b> (the last sound on all 27 keys, F4 as tuned) → <b>16 LEVELS</b> (white 1–16: the last sound, soft to loud) → PADS</td></tr>
+      <tr><td>MIDI in</td><td>notes 36–67 play A01–B16 (velocity in 16 steps); Program Change 0–15 picks loop 1–16</td></tr>
     </table>
   </div></div>
 
-  <div class="box" style="margin-top:6px"><h2>The factory sounds</h2><div class="in">
-    <div class="pads"><span>A1<i>KICK</i></span><span>A2<i>SNARE</i></span><span>A3<i>HAT</i></span><span>A4<i>CLAP</i></span><span>A5<i>TOM H</i></span><span>A6<i>CRASH</i></span><span>A7<i>BASS</i></span><span>A8<i>PNO Cm9</i></span></div>
-    <div class="pads"><span>B1<i>KICK 33</i></span><span>B2<i>SNARE 33</i></span><span>B3<i>OHAT</i></span><span>B4<i>CLAP 33</i></span><span>B5<i>CONGA</i></span><span>B6<i>RIDE</i></span><span>B7<i>SCRCH</i></span><span>B8<i>PNO F13</i></span></div>
-    <div class="pads"><span>C1<i>TOM L</i></span><span>C2<i>RIM 33</i></span><span>C3<i>HAT 33</i></span><span>C4<i>SNAP</i></span><span>C5<i>CLAVE</i></span><span>C6<i>COWBL</i></span><span>C7<i>WOOD</i></span><span>C8<i>EP Dm9</i></span></div>
-    <div class="pads"><span>D1<i>SPIN</i></span><span>D2<i>RIM</i></span><span>D3<i>SHAKR</i></span><span>D4<i>PIANO</i></span><span>D5<i>VIBES</i></span><span>D6<i>HORNS</i></span><span>D7<i>TAMB</i></span><span>D8<i>EP Gm9</i></span></div>
-    <p class="dim" style="margin:3px 0 0"><b>33</b>: TUNE −7 + SPEED 33, about an octave lower. Any pad, any of these 27 samples or your own (the sample editor): hit it, turn <b>PRESETS</b>. 12 bit at 26.04 kHz, pitched without interpolation.</p>
-  </div></div>
-
-  <div class="box" style="margin-top:6px"><h2>Sound</h2><div class="in">
-    <table>
-      <tr><td>Channels</td><td>a pad plays on the channel of its <b>position</b>: pad 3 of every bank on channel 3 (fader 3, mute 3, solo 3). One sound at a time each: a new hit cuts the last (the hats share 3); a CHOP group (EDIT → OUT) cuts across channels. Pads 1–2 have the filter</td></tr>
-      <tr><td>1–2</td><td>a 4-pole resonant low-pass: open as CUT at the hit, closing two octaves as the sound decays (RESO)</td></tr>
-      <tr><td>3–6 · 7–8</td><td>a fixed low-pass · no filter (OUT: CUT / RESO --)</td></tr>
-      <tr><td>45 → 33</td><td>TRUNC, SPEED: played at 33/45 of its rate: lower, grainier. Own samples also at ×2 (the editor): an octave down on the pad</td></tr>
-    </table>
+  <div class="box" style="margin-top:6px"><h2>The factory pads</h2><div class="in">
+    <div class="banks"><div><b class="t">BANK A</b><div class="pads"><span>13<i>CONGA</i></span><span>14<i>RIDE</i></span><span>15<i>SCRCH</i></span><span>16<i>COWBL</i></span></div><div class="pads"><span>09<i>TOM L</i></span><span>10<i>RIM</i></span><span>11<i>OHAT</i></span><span>12<i>SNAP</i></span></div><div class="pads"><span>05<i>TOM H</i></span><span>06<i>CRASH</i></span><span>07<i>BASS</i></span><span>08<i>EP Dm9</i></span></div><div class="pads"><span>01<i>KICK</i></span><span>02<i>SNARE</i></span><span>03<i>HAT</i></span><span>04<i>CLAP</i></span></div></div><div><b class="t">BANK B</b><div class="pads"><span>13<i>WOOD</i></span><span>14<i>CONGA +4</i></span><span>15<i>SCRCH −5</i></span><span>16<i>SNAP 33</i></span></div><div class="pads"><span>09<i>TOM L −5</i></span><span>10<i>RIM 33</i></span><span>11<i>SHAKR</i></span><span>12<i>TAMB</i></span></div><div class="pads"><span>05<i>CLAVE</i></span><span>06<i>CONGA −5</i></span><span>07<i>BASS −5</i></span><span>08<i>EP −7 (Gm9)</i></span></div><div class="pads"><span>01<i>KICK 33</i></span><span>02<i>SNARE 33</i></span><span>03<i>HAT 33</i></span><span>04<i>CLAP 33</i></span></div></div></div>
+    <p class="dim" style="margin:3px 0 0">Pad 01 bottom left, as on the old sampling sequencers. <b>33</b>: TUNE −7 + SPEED 33, darker and grainier. Any pad, any of the 20 samples or your own: hit it, turn <b>PRESETS</b>. 12 bit at 40 kHz, pitched without interpolation.</p>
   </div></div>
 </div>
 
 <div>
   <div class="box"><h2>The knobs</h2><div class="in">
-    <div class="lcd">A1 KICK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;090<br><span style="font-weight:400">CH1 &nbsp;CH2 &nbsp;CH3 &nbsp;CH4</span><br>100 &nbsp;100 &nbsp;100 &nbsp;100</div>
+    <div class="lcd">A01 KICK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;090<br><span style="font-weight:400">CH1 &nbsp;CH2 &nbsp;CH3 &nbsp;CH4</span><br>100 &nbsp;100 &nbsp;100 &nbsp;100</div>
     <table>
-      <tr><td>KNOB 1–4</td><td>the <b>faders</b> of channels 1–4 (100 as set, 50 −12 dB); <span class="k">SEL</span>: <b>5–8</b> (lit) / 1–4, also from a page. The LCD's four columns always say what the knobs do.</td></tr>
-      <tr><td>A page</td><td>EDIT, FX, SEQ, GLO open one (tap again: the next); untouched <b>12 s</b> (SETUP: BACK), or <span class="k">HOME</span>: the faders again</td></tr>
+      <tr><td>KNOB 1–4</td><td>the <b>faders</b> of channels 1–4 (100 as set, 50 −12 dB); <span class="k">SEL</span>: <b>5–8</b> (lit) / 1–4. The LCD's four columns always say what the knobs do</td></tr>
+      <tr><td>A page</td><td>EDIT, FX, SEQ, GLO open one (tap again: the next); untouched <b>12 s</b> (SETUP: BACK), or <span class="k">HOME</span>: the pads and faders again</td></tr>
       <tr><td>SELECT</td><td>tempo</td></tr>
-      <tr><td>ALGORITHM</td><td>the sound to edit (A1 … D8), without playing it</td></tr>
-      <tr><td>PRESETS</td><td><b>the sample</b> of the selected pad (the last hit, or ALGORITHM): one sample on many pads, each with its own TUNE, DECAY …</td></tr>
+      <tr><td>ALGORITHM</td><td>the pad to edit (A01 … B16), without playing it</td></tr>
+      <tr><td>PRESETS</td><td><b>the sample</b> of the selected pad: one sample on many pads, each with its own TUNE, DECAY …</td></tr>
       <tr><td>MASTER</td><td>the volume</td></tr>
     </table>
   </div></div>
@@ -113,16 +103,16 @@
       <tr><td><span class="k">EDIT</span> WAVE</td><td>the pad's sample · COPY> pad · COPY (turn twice) · –</td></tr>
       <tr><td>SOUND</td><td>TUNE (semitones) · FINE · DECAY · LEVEL</td></tr>
       <tr><td>TRUNC</td><td>START · END · DIR (fwd / rev) · SPEED (45 / 33)</td></tr>
-      <tr><td>OUT</td><td>CHOP group (--, 1–8: its pads cut each other, wherever they are; hold pads while turning: they all join; the label shows the channel = the pad's position) · PAN · CUT · RESO (only pads 1–2 filter: on 3–8 they show --)</td></tr>
+      <tr><td>OUT</td><td>CHOP group (--, 1–8: its pads cut each other) · PAN · CUT · RESO (only channels 1–2 filter)</td></tr>
       <tr><td>SENDS</td><td>DRIVE · CHO · DLY · REV: <b>the effects of this pad</b></td></tr>
-      <tr><td><span class="k">FX</span> FILTER</td><td><b>DJ filter</b> on the whole mix: left a low-pass, right a high-pass, centre OFF · RESO</td></tr>
+      <tr><td><span class="k">FX</span> FILTER</td><td><b>DJ filter</b> on the mix: left low-pass, right high-pass, centre OFF · RESO</td></tr>
       <tr><td>CHORUS</td><td>RATE · DEPTH · MIX</td></tr>
       <tr><td>DELAY</td><td>TIME (1/4 … 16T, in tempo) · FDBK · COLOR · MIX</td></tr>
       <tr><td>REVERB</td><td>SIZE · DAMP · PRE (ms)</td></tr>
-      <tr><td><span class="k">SEQ</span> LOOP</td><td>LOOP · BARS (AUTO, 1–32) · QUANT (AUTO CORRECT) · SWING 50–71 %</td></tr>
+      <tr><td><span class="k">SEQ</span> LOOP</td><td>LOOP · BARS (AUTO, 1–32) · QUANT (AUTO CORRECT, also NOTE REPEAT's grid) · SWING 50–71 %</td></tr>
       <tr><td>LOOP TOOLS</td><td>CLEAR (turn twice) · COPY> loop · COPY (turn twice)</td></tr>
-      <tr><td>SONG</td><td>STEP · SEG (its loop) · REPEAT (0: the song ends here) · SONG OFF / 1–4 (stopped)</td></tr>
-      <tr><td><span class="k">GLO</span> SETUP</td><td>TEMPO · BACK · – · RESET (<b>factory: all loops gone</b>, turn twice); tap: <b>CLICK</b>: CLICK · <b>COUNT</b> · <b>DUB</b> (NOW / BAR); tap: OUTPUT: SMOOTH</td></tr>
+      <tr><td>SONG</td><td>STEP · SEG (its loop) · REPEAT (0: the song ends here) · SONG OFF / 1–4</td></tr>
+      <tr><td><span class="k">GLO</span> SETUP</td><td>TEMPO · BACK · – · RESET (<b>all loops gone</b>, turn twice); tap: CLICK: CLICK · COUNT · DUB; tap: OUTPUT: SMOOTH</td></tr>
     </table>
   </div></div>
 </div>
@@ -130,49 +120,42 @@
 <div>
   <div class="box"><h2>Make a beat</h2><div class="in">
     <ol>
-      <li><span class="k">REC</span> (<b>ARMED</b>), <span class="k">PLAY</span>: <b>COUNT 4 3 2 1</b>, then it records.</li>
-      <li>Play kick and snare. <b>AUTO CORRECT</b> puts them on the grid.</li>
-      <li><span class="k">REC</span> again at the end: an empty loop (BARS <b>AUTO</b>) is now as long as your take.</li>
-      <li>Hats step by step: hit the hat, <b>hold</b> <span class="k">SEQ</span>: the white keys are its 16 steps (lit = a hit), tap to set / clear; <span class="k">OCT+</span> / <span class="k">OCT−</span> the next / last bar.</li>
-      <li><span class="k">REC</span> while it plays: overdub on top (DUB BAR: from the next 1); <span class="k">REC</span> again: off.</li>
-      <li>Turn TUNE, FINE, DECAY (EDIT → SOUND) or CUT while recording: <b>the pad's hits keep what you turned</b> (a red dot in the step grid).</li>
-      <li>A chord: white 8 (A8), or <span class="k">OCT+</span>, white 8 (C8). Melodic: <span class="k">ARP</span> (MULTI PITCH).</li>
+      <li><span class="k red">REC</span> (<b>ARMED</b>), <span class="k">PLAY</span>: <b>COUNT 4 3 2 1</b>, then it records.</li>
+      <li>Kick (white 1) and snare (white 2). <b>AUTO CORRECT</b> puts them on the grid.</li>
+      <li><span class="k red">REC</span> again at the end: an empty loop (BARS <b>AUTO</b>) is now as long as your take.</li>
+      <li>Hats with <b>NOTE REPEAT</b>: <span class="k red">REC</span>, hold <span class="k">ENV</span> and white 3: 1/16 hats while you hold. QUANT 1/8 or 1/32 for other rolls, SWING for the feel.</li>
+      <li>Or step by step: hit the hat, <b>hold</b> <span class="k">SEQ</span>: the white keys are its 16 steps; <span class="k">OCT+</span> / <span class="k">OCT−</span> the next / last bar.</li>
+      <li>Ghost notes: <span class="k">ARP</span> twice (<b>16 LEVELS</b>), white 1–16 play the snare soft to loud.</li>
       <li>Another loop: a black key, record into it. Songs: SEQ → SONG.</li>
     </ol>
   </div></div>
 
   <div class="box" style="margin-top:6px"><h2>Buttons</h2><div class="in">
     <table>
-      <tr><td><span class="k">PLAY</span></td><td>run / stop (lit while it runs)</td></tr>
+      <tr><td><span class="k">PLAY</span></td><td>run / stop</td></tr>
       <tr><td><span class="k red">REC</span></td><td>stopped: ARMED; playing: overdub on / off; <b>hold 2 s</b>: clear the loop</td></tr>
-      <tr><td><span class="k">GLO</span> held + white</td><td>1–8 <b>mute</b>, 9–16 <b>solo</b> ch 1–8 (lit while heard; M / S under the faders)</td></tr>
+      <tr><td><span class="k">ENV</span></td><td>tapped: tap tempo · held + pads: <b>NOTE REPEAT</b></td></tr>
+      <tr><td><span class="k">GLO</span> held + white</td><td>1–8 <b>mute</b>, 9–16 <b>solo</b> ch 1–8</td></tr>
       <tr><td><span class="k">EDIT</span> held + <span class="k">OCT−</span></td><td><b>undo</b> the last clear / erase / copy (again: redo)</td></tr>
-      <tr><td><span class="k">FX</span> held + white 1–4</td><td><b>punch-in</b> while held: 1 roll 1/8 · 2 roll 1/16 · 3 reverse · 4 tape stop; <span class="k">OCT−</span> / <span class="k">OCT+</span>: <b>reverb / echo throw</b> (FX tapped: the FX pages)</td></tr>
+      <tr><td><span class="k">FX</span> held + white 1–4</td><td><b>punch-in</b>: roll 1/8 · roll 1/16 · reverse · tape stop; <span class="k">OCT−</span> / <span class="k">OCT+</span>: reverb / echo throw</td></tr>
       <tr><td><span class="k">LFO</span> + pad</td><td><b>erase</b> its hits as the playhead passes (stopped: all)</td></tr>
-      <tr><td><span class="k">ENV</span></td><td>tap tempo (it blinks on the beat)</td></tr>
-      <tr><td><span class="k">SAVE</span></td><td>save now (playing: at the stop; also by itself); <b>held + a black key</b>: the loop into that loop</td></tr>
-      <tr><td><span class="k">HOME</span></td><td>the faders</td></tr>
+      <tr><td><span class="k">SAVE</span></td><td>save now; <b>held + a black key</b>: the loop into that loop</td></tr>
     </table>
   </div></div>
 
-  <div class="box" style="margin-top:6px"><h2>Effects in 3 steps</h2><div class="in">
-    <ol>
-      <li>Hit the pad (the snare).</li>
-      <li><span class="k">EDIT</span> until the LCD says <b>SENDS</b>.</li>
-      <li>KNOB 4 = REV, KNOB 3 = DLY. Shape them: <span class="k">FX</span>.</li>
-    </ol>
-    <p class="dim" style="margin:4px 0 0"><b>Your start:</b> it plays A5, C1, A1 + A6: put your own sounds there. <b>In the browser</b> (Chrome / Edge, USB): <b>zp12.designburgapps.com/editor</b> samples (mic, interface, line-in), drops your own sounds onto the pads or <b>chops a loop to pads</b> (one chop a pad), <b>/backup</b> saves and restores everything. No answer? Hold OCT− while switching on (USB rescue).</p>
+  <div class="box" style="margin-top:6px"><h2>Channels</h2><div class="in">
+    <p style="margin:0">8 channels, one sound each: a pad plays on <b>its place in the row pair</b>: pads 01 and 09 on channel 1, 02 and 10 on 2 … 08 and 16 on 8 (in both banks). <b>A new hit on a channel cuts the last</b>: HAT (03) and OHAT (11) choke. Channels 1–2 (pads 01 02 09 10) have the resonant filter, 3–6 a fixed low-pass, 7–8 none.</p>
   </div></div>
 </div>
 </div>
 
-<footer><span>Based on SLOOP (isod89) and Felucca (Leo Kuroshita, Hügelton Instruments), GPL-3.0 · sounds CC0 (VSCO-2 CE, VCSL, Sonic Pi), E-piano Greg Sullivan (CC BY 3.0)</span>
-<span>Inspired by the 12-bit samplers of the 80s, names their owners' · not affiliated with M-VAVE</span></footer>
+<footer><span>Based on zp12, SLOOP (isod89) and Felucca (Leo Kuroshita, Hügelton Instruments), GPL-3.0 · sounds CC0 (VSCO-2 CE, Sonic Pi), E-piano Greg Sullivan (CC BY 3.0)</span>
+<span>Inspired by the sampling sequencers of the late 80s, names their owners' · not affiliated with M-VAVE or Akai</span></footer>
 </div>
 <div class="sheet p2">
 <header>
-  <span class="mark">zp12</span><span class="sub">in detail</span><span class="rule"></span>
-  <span class="ver">firmware 2.4.3 · 2 / 2</span>
+  <span class="mark">zpc60</span><span class="sub">in detail</span><span class="rule"></span>
+  <span class="ver">firmware 0.1 · 2 / 2</span>
 </header>
 
 <div class="grid">
@@ -182,27 +165,26 @@
       <tr><td><span class="k">PLAY</span></td><td>lit while it runs</td></tr>
       <tr><td><span class="k red">REC</span></td><td>lit: recording · blinking: ARMED, or an overdub waiting for the next 1</td></tr>
       <tr><td><span class="k">ENV</span></td><td>blinks on the beat (tap along)</td></tr>
-      <tr><td><span class="k">ARP</span> · <span class="k">SEL</span></td><td>MULTI PITCH on · the knobs are faders 5–8</td></tr>
+      <tr><td><span class="k">ARP</span> · <span class="k">SEL</span></td><td>MULTI PITCH or 16 LEVELS on · the knobs are faders 5–8</td></tr>
       <tr><td><span class="k">LFO</span></td><td>erasing (held + a pad)</td></tr>
       <tr><td><span class="k">SAVE</span></td><td>lit in song mode</td></tr>
-      <tr><td><span class="k">OCT−</span> <span class="k">OCT+</span></td><td>banks A + B / C + D on the keys</td></tr>
-      <tr><td><span class="k">HOME</span> …</td><td>the button of the open page (HOME, EDIT, FX, SEQ, GLO)</td></tr>
-      <tr><td>White keys</td><td>flash when their pad sounds (played or from the loop); <b>SEQ held</b>: the steps with a hit, the playhead glowing; <b>GLO held</b>: 1–8 the channels you hear, 9–16 the soloed</td></tr>
-      <tr><td>Black keys</td><td>the loop playing lit, the next one blinking, the others glowing</td></tr>
+      <tr><td><span class="k">OCT−</span> <span class="k">OCT+</span></td><td>bank A / B on the keys</td></tr>
+      <tr><td>White keys</td><td>flash when their pad sounds; <b>SEQ held</b>: the steps with a hit; <b>GLO held</b>: 1–8 the channels you hear, 9–16 the soloed</td></tr>
+      <tr><td>Black keys</td><td>the loop playing lit, the next one blinking</td></tr>
     </table>
   </div></div>
 
   <div class="box" style="margin-top:6px"><h2>The screen</h2><div class="in">
     <table>
-      <tr><td>Big line</td><td>the selected pad and its sound (A1 KICK), or what just changed</td></tr>
+      <tr><td>Big line</td><td>the selected pad and its sound (A01 KICK), or what just changed</td></tr>
       <tr><td>Top right</td><td>the tempo, with <b>ARMED</b>, <b>COUNT</b> or <b>REC</b> before it; below it the page</td></tr>
-      <tr><td>Four columns</td><td>what KNOB 1–4 do now, and their values</td></tr>
-      <tr><td>A B C D</td><td>the banks on the keys</td></tr>
-      <tr><td>M · S</td><td>MULTI PITCH · song mode</td></tr>
+      <tr><td>4 × 4 pads</td><td>the bank on the keys, pad 01 bottom left; red while it sounds, the selected one outlined</td></tr>
+      <tr><td>Faders</td><td>beside the pads: channels 1–8, the four on the knobs white; M muted, S soloed</td></tr>
+      <tr><td>A B</td><td>the bank on the keys</td></tr>
+      <tr><td>M · L</td><td>MULTI PITCH · 16 LEVELS</td></tr>
+      <tr><td>S · NR</td><td>song mode · NOTE REPEAT running</td></tr>
       <tr><td>RUN · REC</td><td>running (blinks on the beat) · recording (blinks: ARMED)</td></tr>
-      <tr><td>M / S</td><td>under a fader: that channel muted / soloed</td></tr>
       <tr><td>Red dot</td><td>in the step grid: a hit with its own TUNE / FINE / DECAY / CUT</td></tr>
-      <tr><td>Version</td><td>on the GLO pages and at the start (any key skips the start)</td></tr>
     </table>
   </div></div>
 </div>
@@ -210,25 +192,23 @@
 <div>
   <div class="box"><h2>Recording</h2><div class="in">
     <table>
-      <tr><td>Count-in</td><td>GLO → CLICK → COUNT: OFF (it records at once), 1 bar (4 3 2 1), 2 bars (8 … 1)</td></tr>
-      <tr><td>AUTO</td><td>a loop with BARS AUTO takes the length of its first take, in whole bars (REC up to a quarter past a bar line: that bar)</td></tr>
-      <tr><td>QUANT</td><td>AUTO CORRECT to OFF, 1/8, 1/8T, <b>1/16</b>, 1/16T, 1/32, 1/32T</td></tr>
-      <tr><td>SWING</td><td>50, 54, 58, 63, 67, 71 %: the off 1/16s (with QUANT 1/8: the off 1/8s) come later</td></tr>
+      <tr><td>Count-in</td><td>GLO → CLICK → COUNT: OFF, 1 bar (4 3 2 1), 2 bars</td></tr>
+      <tr><td>AUTO</td><td>a loop with BARS AUTO takes the length of its first take, in whole bars</td></tr>
+      <tr><td>QUANT</td><td>AUTO CORRECT: OFF, 1/8, 1/8T, <b>1/16</b>, 1/16T, 1/32, 1/32T</td></tr>
+      <tr><td>SWING</td><td>50, 54, 58, 63, 67, 71 %: the off 1/16s (QUANT 1/8: the off 1/8s) come later; NOTE REPEAT swings along</td></tr>
+      <tr><td>NOTE REPEAT</td><td>its grid is QUANT (OFF: 1/16); playing, the first hit waits for the grid; every repeat is recorded like a hit</td></tr>
+      <tr><td>Velocity</td><td>16 steps. The keys play at one level (14 of 16), <b>16 LEVELS</b> gives all 16, MIDI in its own</td></tr>
       <tr><td>Overdub</td><td>a hit where one is: the louder stays. Up to 512 hits a loop</td></tr>
-      <tr><td>Velocity</td><td>the keys play at one level; USB MIDI velocity is played and recorded (8 steps)</td></tr>
-      <tr><td>Per hit</td><td>TUNE, FINE, DECAY, CUT turned while recording (within 0.6 s of the turn) stay with the pad's hits</td></tr>
-      <tr><td>Step grid</td><td>16 steps of 1/16 a bar; a step set by hand plays at a fixed level. A hit off the 1/16 grid shows, but a tap adds one beside it. In an AUTO loop the first step makes it 1 bar</td></tr>
-      <tr><td>Erase</td><td><span class="k">LFO</span> + a pad: playing, its hits go as the playhead passes; stopped, all at once</td></tr>
+      <tr><td>Per hit</td><td>TUNE, FINE, DECAY, CUT turned while recording stay with the pad's hits</td></tr>
+      <tr><td>Step grid</td><td>16 steps of 1/16 a bar; a step set by hand plays at level 14</td></tr>
     </table>
   </div></div>
 
   <div class="box" style="margin-top:6px"><h2>Loops and songs</h2><div class="in">
     <table>
-      <tr><td>16 loops</td><td>1–11 on the black keys, 12–16 with SEQ → LOOP (stopped); each 1–32 bars or AUTO</td></tr>
-      <tr><td>Copy</td><td><span class="k">SAVE</span> held + a black key, or SEQ → TOOLS: COPY> the loop, COPY (turn twice)</td></tr>
-      <tr><td>Songs</td><td>4 songs of up to 32 steps, each step a loop (SEG) played REPEAT times</td></tr>
-      <tr><td>Make one</td><td>stopped, SEQ → SONG: SONG 1–4, then STEP and SEG; turn SEG on the step after the last to add one; REPEAT to 0 to end it there</td></tr>
-      <tr><td>Play</td><td><span class="k">PLAY</span> plays the song from step 1 and stops at its end. A black key or SONG OFF: back to the loops</td></tr>
+      <tr><td>16 loops</td><td>1–11 on the black keys, 12–16 with SEQ → LOOP; each 1–32 bars or AUTO</td></tr>
+      <tr><td>Copy</td><td><span class="k">SAVE</span> held + a black key, or SEQ → TOOLS</td></tr>
+      <tr><td>Songs</td><td>4 songs of up to 32 steps, each a loop (SEG) played REPEAT times; <span class="k">PLAY</span> plays it from step 1</td></tr>
     </table>
   </div></div>
 </div>
@@ -237,37 +217,34 @@
   <div class="box"><h2>Ranges</h2><div class="in">
     <table>
       <tr><td>TEMPO</td><td>40–240 BPM; SELECT 0.5 a click, ENV tapped</td></tr>
-      <tr><td>Faders</td><td>0–127: 100 as set, 50 −12 dB, 127 about +4 dB</td></tr>
+      <tr><td>Faders</td><td>0–127: 100 as set, 50 −12 dB</td></tr>
       <tr><td>TUNE · FINE</td><td>−24 … +12 semitones · ±50 cents</td></tr>
-      <tr><td>DELAY</td><td>TIME 1/4, 1/8, 1/16, 1/32, 8T, 16T; FDBK 0–120</td></tr>
-      <tr><td>REVERB PRE</td><td>0–90 ms</td></tr>
-      <tr><td>Filters</td><td>pads 1–2: CUT, RESO (4-pole low-pass) · 3–4: 9 kHz · 5–6: 12 kHz · 7–8: none</td></tr>
-      <tr><td>OUT CH1–8</td><td>the label shows the channel: it is the pad's position and does not change. Chops that should cut each other: a CHOP group</td></tr>
+      <tr><td>Samples</td><td>the kit 12 bit at 40 kHz; your own at 40, 26 or 20 kHz (less rate, more time)</td></tr>
+      <tr><td>Filters</td><td>channels 1–2: CUT, RESO (4-pole low-pass) · 3–6: fixed low-pass · 7–8: none</td></tr>
     </table>
   </div></div>
 
   <div class="box" style="margin-top:6px"><h2>Saving and safety</h2><div class="in">
     <table>
-      <tr><td>Saved</td><td>by itself when stopped and 3 s after a change; <span class="k">SAVE</span> now (playing: SAVES AT STOP)</td></tr>
-      <tr><td>Not saved</td><td>mute / solo and the DJ filter (FX → FILTER): gone at power-off</td></tr>
-      <tr><td>Undo</td><td><span class="k">EDIT</span> held + <span class="k">OCT−</span>: the last clear, copy or stopped erase of a loop, one step. Not an erase while playing, not WAVE → COPY</td></tr>
-      <tr><td>RESET</td><td>GLO → SETUP: every pad, mix, effect back to the factory, <b>all loops and songs gone</b>. Back up first</td></tr>
-      <tr><td>Backup</td><td><b>zp12.designburgapps.com/backup</b>: everything to a file and back (Chrome / Edge, USB)</td></tr>
+      <tr><td>Saved</td><td>by itself when stopped and 3 s after a change; <span class="k">SAVE</span> now</td></tr>
+      <tr><td>Its own</td><td>zpc60 keeps its own save; it never reads zp12's (they share the flash: switching back and forth, the last one saving wins)</td></tr>
+      <tr><td>Not saved</td><td>mute / solo and the DJ filter</td></tr>
+      <tr><td>Undo</td><td><span class="k">EDIT</span> held + <span class="k">OCT−</span>: the last clear, copy or stopped erase</td></tr>
+      <tr><td>RESET</td><td>GLO → SETUP: everything back to the factory, <b>all loops gone</b></td></tr>
       <tr><td>Rescue</td><td>no answer? Hold <span class="k">OCT−</span> while switching on: the USB rescue, then install again</td></tr>
-      <tr><td>DJ filter</td><td>sounds dull or thin? FX → FILTER may be on (centre = OFF)</td></tr>
     </table>
   </div></div>
 </div>
 </div>
-<footer><span>zp12.designburgapps.com: the install, the sample editor, the backup, a video.</span><span>GPL-3.0 · github.com/zvenson/zp12</span></footer>
+<footer><span>zpc60 0.1: a first version, not yet in a shop or on the hub.</span><span>GPL-3.0 · github.com/zvenson/zpc60</span></footer>
 </div>
 </div>
 <script>
-/* the 27 keys: white 1-16 numbered, the black ones the loops */
+/* the 27 keys: white 1-16 = pads 01-16, the black ones the loops */
 (() => {
   const kb = document.getElementById("kb"), black = [1, 3, 5, 8, 10, 13, 15, 17, 20, 22, 25];
   let w = 0, loop = 1;
-  for (let k = 0; k < 27; k++) if (!black.includes(k)) { const d = document.createElement("div"); d.className = "w"; d.textContent = ++w; kb.append(d); }
+  for (let k = 0; k < 27; k++) if (!black.includes(k)) { const d = document.createElement("div"); d.className = "w"; d.textContent = String(++w).padStart(2, "0"); kb.append(d); }
   for (let k = 0; k < 27; k++) if (black.includes(k)) {
     let wb = 0; for (let i = 0; i < k; i++) if (!black.includes(i)) wb++;
     const d = document.createElement("div"); d.className = "b"; d.style.left = `calc(${wb / 16 * 100}% - 1.8%)`; d.textContent = "L" + loop++; kb.append(d);
