@@ -207,7 +207,7 @@
   // copy counts), the samples packed 12 bit in whole sectors of the free rooms (or sloopDX's bank room, if wanted)
   const DIR = [0xd8000, 0xd9000], NSLOT = 24, DIRLEN = 16 + NSLOT * 20, MAGIC_DIR = 0x4d53505a;
   const ROOMS = [[0xda000, 0xdc000], [0xe5000, 0xe9000], [0xea000, 0xfc000]], BANKROOM = [0xa0000, 0xc4000];
-  const RATES = [26040, 27500];
+  const RATES = [40000, 26040, 20000];   // zpc60: 40 kHz first (the late-80s sequencers)
   const bytesOf = (n) => Math.floor((n + 1) / 2) * 3;
   const emptyDir = () => ({ gen: 0, flags: 0, copy: -1, slots: Array.from({ length: NSLOT }, () => null) });
 

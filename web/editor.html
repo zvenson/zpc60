@@ -192,7 +192,7 @@
       <div class="opts">
         <label>Names (6 letters + number)<input type="text" id="c-name" maxlength="6"></label>
         <label>Onto the pads from<select id="c-pad"></select></label>
-        <label>Rate<select id="c-rate"><option value="26040">26.04 kHz (the SP-1200)</option><option value="27500">27.5 kHz (the SP-12)</option></select></label>
+        <label>Rate<select id="c-rate"><option value="40000">40 kHz (the late-80s sequencers)</option><option value="26040">26.04 kHz (half again the time)</option><option value="20000">20 kHz (twice the time, darker)</option></select></label>
         <label>Stored at<select id="c-speed"><option value="0">1×, as it is</option><option value="1">45 → 33</option><option value="2">×2: an octave down on the pad</option><option value="3">×2.7: both</option></select></label>
         <label>Cut each other<select id="c-chop"><option value="1">yes: CHOP group 1</option><option value="2">yes: CHOP group 2</option><option value="3">yes: CHOP group 3</option><option value="4">yes: CHOP group 4</option><option value="5">yes: CHOP group 5</option><option value="6">yes: CHOP group 6</option><option value="7">yes: CHOP group 7</option><option value="8">yes: CHOP group 8</option><option value="0">no (only on one channel, A1 and B1)</option></select></label>
         <label>Level<select id="c-norm"><option value="1">all together (the loudest at full)</option><option value="2">each chop at full</option><option value="0">as it is</option></select></label>
@@ -213,7 +213,7 @@
       <p style="font-size:13.5px">Drag the left or right part of the picture to set where it starts and ends.</p>
       <div class="opts">
         <label>Name (8 letters)<input type="text" id="name" maxlength="8"></label>
-        <label>Rate<select id="rate"><option value="26040">26.04 kHz (the SP-1200)</option><option value="27500">27.5 kHz (the SP-12)</option></select></label>
+        <label>Rate<select id="rate"><option value="40000">40 kHz (the late-80s sequencers)</option><option value="26040">26.04 kHz (half again the time)</option><option value="20000">20 kHz (twice the time, darker)</option></select></label>
         <label>Stored at<select id="speed"><option value="0">1×, as it is</option><option value="1">45 → 33: a third more time, grainier</option><option value="2">×2: twice the time, an octave down on the pad</option><option value="3">×2.7: both (the most time, the most grit)</option></select></label>
         <label class="chk"><input type="checkbox" id="norm" checked> Normalise</label>
         <label>Then put it on<select id="pad"><option value="-1">no pad</option></select></label>
@@ -301,7 +301,7 @@ function showDir() {
   const usedB = r.total - r.free;
   $("mem").innerHTML = `<i style="width:${(100 * usedB / r.total).toFixed(1)}%"></i>`;
   $("memtxt").innerHTML = `<b>${dir.slots.filter(Boolean).length}</b> of 24 places · <b>${Math.round(usedB / 1024)}</b> of ${Math.round(r.total / 1024)} KB used · ` +
-    `the longest still fits: <b>${(r.longest / 26040).toFixed(2)} s</b> at 26 kHz, <b>${(r.longest / 26040 * 2).toFixed(2)} s</b> at ×2, <b>${(r.longest / 26040 * 2 * 45 / 33).toFixed(2)} s</b> at ×2.7`;
+    `the longest still fits: <b>${(r.longest / 40000).toFixed(2)} s</b> at 40 kHz, <b>${(r.longest / 26040).toFixed(2)} s</b> at 26 kHz, <b>${(r.longest / 20000).toFixed(2)} s</b> at 20 kHz`;
   $("banks").checked = useB;
   refresh(); info(); showRoom();
 }
