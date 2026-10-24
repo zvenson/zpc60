@@ -267,6 +267,17 @@ static void zp12_main(void)
                         if (pd < 32u) er |= 1u << pd;
                     }
             sq.erase = er;
+            {   /* ENV held: NOTE REPEAT, the pads held hit on every AUTO CORRECT step (sp_seq.c; not with MULTI / 16 LEVELS) */
+                uint32_t nr = 0;
+                if ((bt >> B_ENV) & 1u && !ui.multi)
+                    for (k = 0; k < 27u; k++)
+                        if ((n >> k) & 1u) {
+                            uint32_t pd = key_pad(k);
+                            if (pd < 32u) nr |= 1u << pd;
+                        }
+                sq.nr_vel = 110;
+                sq.nr = nr;
+            }
             {   /* FX held: white keys 1-4 punch in, the last one held wins (sp_punch.c); OCT- / OCT+ throw */
                 int32_t px = -1;
                 if ((bt >> B_FX) & 1u)

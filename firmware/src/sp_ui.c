@@ -58,7 +58,9 @@ static struct {
     uint8_t pair;                               /* 0: banks A + B on the keys, 1: C + D */
     uint8_t sel;                                /* the sound the knobs edit, 0..31 */
     uint8_t page;
-    uint8_t multi;                              /* MULTI PITCH */
+    uint8_t multi;                              /* ARP: 1 MULTI PITCH, 2 16 LEVELS */
+    uint8_t env_used;                           /* ENV held: a pad pressed (NOTE REPEAT, not a tap) */
+    uint16_t env_bpm;                           /* the tempo before ENV's tap (back if it was NOTE REPEAT) */
     uint8_t shift;                              /* SEL pressed (lit): the knobs are the faders 5-8 */
     uint8_t steps;                              /* SEQ held: the step grid on the keys */
     uint8_t step_bar;                           /* the bar the step grid shows */
@@ -458,7 +460,7 @@ static void led(int32_t x, int32_t y, int on)
     cv_rect(x + 1, y, 4, 1, on ? RGB(255, 170, 160) : P_LEDOFF);
 }
 
-static void draw_leds(void)                     /* banks A, B (on the keys), MULTI, SONG, RUN, REC */
+static void draw_leds(void)                     /* banks A, B (on the keys), MULTI, 16 LEVELS, SONG, NOTE REPEAT, RUN, REC */
 {
     uint32_t i;
     int blink = (sq.beat & 1u) == 0u;
@@ -468,14 +470,18 @@ static void draw_leds(void)                     /* banks A, B (on the keys), MUL
         led(4 + (int32_t)i * 24, 8, i == ui.pair);
         cv_text_on(12 + (int32_t)i * 24, 3, &FONT_S, b, P_FRAME, P_NAVY);
     }
-    led(60, 8, ui.multi);
-    cv_text_on(68, 3, &FONT_S, "M", P_FRAME, P_NAVY);
-    led(84, 8, sq.song_mode);
-    cv_text_on(92, 3, &FONT_S, "S", P_FRAME, P_NAVY);
-    led(120, 8, sq.playing && (blink || sq.countin > 0));
-    cv_text_on(128, 3, &FONT_S, "RUN", P_FRAME, P_NAVY);
-    led(170, 8, sq.recording || ((sq.rec_arm || sq.dub_wait) && blink));
-    cv_text_on(178, 3, &FONT_S, "REC", P_RED, P_NAVY);
+    led(52, 8, ui.multi == 1u);
+    cv_text_on(60, 3, &FONT_S, "M", P_FRAME, P_NAVY);
+    led(72, 8, ui.multi == 2u);
+    cv_text_on(80, 3, &FONT_S, "L", P_FRAME, P_NAVY);
+    led(92, 8, sq.song_mode);
+    cv_text_on(100, 3, &FONT_S, "S", P_FRAME, P_NAVY);
+    led(112, 8, sq.nr != 0u);
+    cv_text_on(120, 3, &FONT_S, "NR", P_FRAME, P_NAVY);
+    led(148, 8, sq.playing && (blink || sq.countin > 0));
+    cv_text_on(156, 3, &FONT_S, "RUN", P_FRAME, P_NAVY);
+    led(192, 8, sq.recording || ((sq.rec_arm || sq.dub_wait) && blink));
+    cv_text_on(200, 3, &FONT_S, "REC", P_RED, P_NAVY);
     cv_blit(4, 214);
 }
 
@@ -547,7 +553,7 @@ static void ui_draw(void)
             if (s != ui.sig_mid || ui.force) { ui.sig_mid = s; ui.sig_pad = 0; draw_deck(); }
         }
     }
-    s = ui.pair + ui.multi * 2u + sq.playing * 4u + sq.recording * 8u + (sq.rec_arm | sq.dub_wait) * 16u + sq.song_mode * 32u +
+    s = ui.pair + ui.multi * 256u + (sq.nr != 0u) * 1024u + sq.playing * 4u + sq.recording * 8u + (sq.rec_arm | sq.dub_wait) * 16u + sq.song_mode * 32u +
         (sq.beat & 1u) * 64u + (sq.countin > 0) * 128u + 1u;
     if (s != ui.sig_led || ui.force) { ui.sig_led = s; draw_leds(); }
     ui.force = 0;
@@ -640,6 +646,25 @@ static void key_down(uint32_t k, int erase)
         }
         return;
     }
+    if ((ui.held >> B_ENV) & 1u && !ui.multi && !erase) {   /* ENV held: NOTE REPEAT (zp12.c sets sq.nr from the keys held) */
+        uint32_t pd = key_pad(k);
+        if (!ui.env_used) {                      /* (ENV's press was no tap: the tempo as it was) */
+            sq.bpm10 = ui.env_bpm;
+            ui.tap_ms[0] = 0;
+        }
+        ui.env_used = 1;
+        if (pd == 0xFFu)
+            return;
+        ui.sel = (uint8_t)pd;
+        if (!sq.playing)
+            pad_hit(pd, 110);                    /* stopped: at once, then on its own clock; playing: on the grid */
+        {
+            char m[24];
+            cat(cat(m, "REPEAT "), SQ_GRID_NAME[sq.quant % 7u ? sq.quant % 7u : 3u]);
+            ui_say(m);
+        }
+        return;
+    }
     if (ui.steps) {                              /* SEQ held: a white key sets / clears the selected pad's step */
         uint32_t w = white_of(k);
         if (w != 0xFFu) {
@@ -653,6 +678,12 @@ static void key_down(uint32_t k, int erase)
         uint32_t b = 0, i;
         for (i = 0; i < k; i++) b += white_of(i) == 0xFFu;
         ui_loop(b);
+        return;
+    }
+    if (ui.multi == 2u && !erase) {              /* 16 LEVELS: white keys 1-16 the sound, soft to loud */
+        uint32_t w = white_of(k);
+        if (w != 0xFFu)
+            pad_hit(ui.sel, (w + 1u) * 8u - 1u);
         return;
     }
     if (ui.multi && !erase) {                    /* MULTI PITCH: the sound, F4 (key 12) as written */
@@ -908,7 +939,10 @@ static void button(uint32_t b)
         } else if (ui.steps) { if (ui.step_bar) ui.step_bar--; }
         else ui.pair = 0;
         break;
-    case B_ARP: ui.multi ^= 1u; break;
+    case B_ARP:                                  /* PADS > MULTI PITCH > 16 LEVELS */
+        ui.multi = (uint8_t)((ui.multi + 1u) % 3u);
+        ui_say(ui.multi == 1u ? "MULTI PITCH" : ui.multi == 2u ? "16 LEVELS" : "PADS");
+        break;
     case B_HOME: page(PG_HOME); break;
     case B_SEL:                                  /* the faders 5-8 (lit) or 1-4, until pressed again; from a page: the faders */
         ui.shift ^= 1u;
@@ -920,7 +954,7 @@ static void button(uint32_t b)
     case B_SEQ: page(ui.page == PG_SEG ? PG_SEG2 : ui.page == PG_SEG2 ? PG_SONG : PG_SEG); break;
     case B_SAVE: ui.save_req = 1; ui_say("SAVED"); break;
     case B_GLO: page(ui.page >= PG_SETUP && ui.page < PG_OUTPUT ? ui.page + 1u : PG_SETUP); break;
-    case B_ENV: tap_tempo(); break;
+    case B_ENV: ui.env_bpm = sq.bpm10; ui.env_used = 0; tap_tempo(); break;   /* (held with pads: NOTE REPEAT) */
     case B_PLAY: sq_post(sq.playing ? RQ_STOP : RQ_PLAY, 0, 0); break;
     case B_REC: sq_post(RQ_REC, 0, 0); break;
     default: break;

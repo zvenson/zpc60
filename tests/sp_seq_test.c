@@ -358,6 +358,36 @@ int main(int argc, char **argv)
         check(pk == 0, "SOLO of another channel: the kick silent");
         sp_solo = 0;
     }
+    {   /* zpc60 NOTE REPEAT: a bar recorded with a pad held repeats it on every 1/16 (swung as played), then stops */
+        sq_seg_t *s9 = &sq_seg[9];
+        uint32_t ok = 1, played = 0, k;
+        sq_play(0);
+        sq.seg = 9; s9->n = 0; s9->bars = 1; sq.quant = 3; sq.swing = 3; sq.rec_arm = 0; sq.cin_bars = 0;
+        sq_play(1);
+        sq.recording = 1;
+        sq.nr_vel = 110;
+        sq.nr = 1u << 5;
+        until_tick(SQ_BAR - 2u);
+        sq.nr = 0;
+        sq_stop_rec();
+        for (k = 0; k < s9->n; k++) ok &= s9->ev[k].pad == 5u && s9->ev[k].t == k * 24u && s9->ev[k].lvl == 13u;
+        check(s9->n == 16u && ok, "NOTE REPEAT: a bar held, 16 hits on the 1/16 grid at level 14");
+        until_wrap();
+        sq.played = 0;
+        until_tick(SQ_BAR / 2u);
+        played = sq.played;
+        check(played == 1u << 5 && count(s9, 5) == 16u, "NOTE REPEAT: they play back once each, nothing more recorded");
+        sq_play(0);
+        sq.played = 0;
+        played = 0;
+        sq.nr = 1u << 2;                             /* stopped: its own clock, a 1/16 at 90 BPM = 1/6 s */
+        for (k = 0; k < SP_FS / SP_BLK; k++) { sq_block(); if (sq.played) { played++; sq.played = 0; } }
+        sq.nr = 0;
+        check(played >= 5u && played <= 7u, "NOTE REPEAT stopped: about six 1/16 a second at 90 BPM");
+        check(sq_lvl_vel(15) == 127u && sq_vel_lvl(127) == 15u && sq_vel_lvl(7) == 0u && sq_lvl_vel(sq_vel_lvl(64)) == 71u,
+              "16 LEVELS: velocity in 16 steps");
+        sq.seg = 0; sq.swing = 0;
+    }
     for (i = 0; i < SP_FS * 2u / SP_BLK; i++) block();  /* the reverb's tail */
     check(peak < 65536, "bounded");
     fseek(wf, 4, SEEK_SET); put32(36u + frames * 4u);

@@ -4,8 +4,8 @@
  * step, swing at playback, four songs of loops with repeats, a count-in and a click.
  *
  * Everything that touches a segment runs in the audio ISR (sq_block): the main loop posts requests into a
- * ring (sq_post), so the playing never sees half an edit. A hit is one word: tick, pad, one of 8 levels (as the
- * original's dynamic buttons), semitones (MULTI PITCH), and SKIP: recorded ahead of the playhead (quantised
+ * ring (sq_post), so the playing never sees half an edit. A hit is one word: tick, pad, one of 16 levels (zpc60:
+ * 16 LEVELS), semitones (MULTI PITCH), and SKIP: recorded ahead of the playhead (quantised
  * forward) and already heard live, so not played again this pass. LK: the hit has its own TUNE / DECAY / CUT
  * (sq_lk, beside it): recorded while those knobs were turned, so a sweep played in stays in the loop. */
 #define SQ_PPQ 96u
@@ -18,11 +18,11 @@
 typedef struct {
     uint32_t t : 14;                            /* tick in the segment (32 bars = 12288) */
     uint32_t pad : 5;
-    uint32_t lvl : 3;                           /* 0..7: velocity (lvl + 1) * 16 - 1 */
+    uint32_t lvl : 4;                           /* 0..15: velocity (lvl + 1) * 8 - 1 */
     uint32_t skip : 1;
     int32_t semis : 6;                          /* -32..31 */
     uint32_t lk : 1;                            /* its lock in sq_lk */
-    uint32_t rsv : 2;
+    uint32_t rsv : 1;
 } sq_ev_t;
 typedef struct { uint8_t bars, rsv; uint16_t n; sq_ev_t ev[SQ_MAXEV]; } sq_seg_t;   /* bars 0: AUTO; ev by t */
 
@@ -63,10 +63,12 @@ static struct {
     volatile uint32_t played;                   /* pads hit since the UI looked (their keys light) */
     volatile uint32_t gen;                      /* bumps on every change of a segment (the UI, the autosave) */
     volatile uint32_t turn;                     /* pads whose TUNE / DECAY / CUT is being turned: recorded with the hits */
+    volatile uint32_t nr;                       /* NOTE REPEAT (ENV held): the pads held, hit on every AUTO CORRECT step */
+    volatile uint8_t nr_vel;
 } sq = {0, 0, 0, 0, 0, 0xFF, 3, 0, 1, 1, 0, 0, 0, 0, 0, 900, 0, 0, SQ_BAR, 0, 0, 0, 0, 0};
 
-static uint32_t sq_lvl_vel(uint32_t lvl) { return (lvl + 1u) * 16u - 1u; }
-static uint32_t sq_vel_lvl(uint32_t vel) { return vel >= 127u ? 7u : vel / 16u; }
+static uint32_t sq_lvl_vel(uint32_t lvl) { return (lvl + 1u) * 8u - 1u; }
+static uint32_t sq_vel_lvl(uint32_t vel) { return vel >= 127u ? 15u : vel / 8u; }
 
 /* the length in ticks; an AUTO segment while its first take runs: the most there is */
 static uint32_t sq_len(const sq_seg_t *s)
@@ -99,7 +101,7 @@ static void sq_insert(sq_seg_t *s, uint32_t t, uint32_t pad, uint32_t lvl, int32
     uint32_t i, j, *L = SQ_LK(s);
     int k = sq_find(s, t, pad);
     if (k >= 0) {                               /* the same hit again: the louder stays */
-        if (lvl > s->ev[k].lvl) s->ev[k].lvl = lvl & 7u;
+        if (lvl > s->ev[k].lvl) s->ev[k].lvl = lvl & 15u;
         s->ev[k].semis = semis;
         if (lk) { s->ev[k].lk = 1; L[k] = lk; }
         return;
@@ -114,7 +116,7 @@ static void sq_insert(sq_seg_t *s, uint32_t t, uint32_t pad, uint32_t lvl, int32
     }
     s->ev[i].t = t;
     s->ev[i].pad = pad & 31u;
-    s->ev[i].lvl = lvl & 7u;
+    s->ev[i].lvl = lvl & 15u;
     s->ev[i].semis = semis;
     s->ev[i].skip = skip & 1u;
     s->ev[i].lk = lk != 0u;
@@ -270,7 +272,7 @@ static void sq_request(uint32_t r)
         if (k >= 0)
             sq_remove_at(s, (uint32_t)k);
         else
-            sq_insert(s, arg, pad, 6u, 0, 0, 0);
+            sq_insert(s, arg, pad, 13u, 0, 0, 0);
         break;
     }
     case RQ_WIPE:
@@ -361,6 +363,39 @@ static void sq_click_at(uint32_t t0, uint32_t t1)   /* a beat in [t0, t1): the c
     }
 }
 
+/* NOTE REPEAT: the pads held hit on every step of the AUTO CORRECT grid (OFF: 1/16) in [from, end), swung as the
+ * loop's hits are; recording, they go in (sq_hit). Called after the loop's own hits, so a repeat just recorded is
+ * not played twice this pass */
+static uint32_t sq_nr_grid(void) { return sq.quant % 7u ? SQ_GRID[sq.quant % 7u] : 24u; }
+static void sq_nr_at(uint32_t from, uint32_t end)
+{
+    uint32_t g = sq_nr_grid(), sg = sq.quant == 1u ? 48u : 24u, sw = SQ_SWING[sq.swing % 6u] - 50u, b, m, k;
+    if (!sq.nr)
+        return;
+    for (b = from > 2u * g ? (from - 2u * g) / g * g : 0u; b < end; b += g) {
+        uint32_t pt = g == sg && sw && b % (2u * g) == g ? b + 2u * g * sw / 100u : b;
+        if (pt < from || pt >= end)
+            continue;
+        for (m = sq.nr, k = 0; m; k++, m >>= 1)
+            if (m & 1u)
+                sq_hit(k, sq.nr_vel, 0);
+    }
+}
+static uint32_t sq_nr_pos;                      /* stopped: NOTE REPEAT's own clock, ticks Q16 from the first hit */
+static void sq_nr_free(uint32_t d)
+{
+    uint32_t g = sq_nr_grid(), from = sq_nr_pos >> 16, m, k;
+    if (!sq.nr) {
+        sq_nr_pos = 0;
+        return;
+    }
+    sq_nr_pos += d;
+    if ((sq_nr_pos >> 16) / g != from / g)
+        for (m = sq.nr, k = 0; m; k++, m >>= 1)
+            if (m & 1u)
+                sq_hit(k, sq.nr_vel, 0);
+}
+
 /* one audio block (SP_BLK samples): the requests, the count-in, the hits whose time has come */
 static void sq_block(void)
 {
@@ -370,10 +405,13 @@ static void sq_block(void)
         sq_request(sq_rq[sq_rq_r % SQ_NRQ]);
         sq_rq_r++;
     }
-    if (!sq.playing)
-        return;
-    s = &sq_seg[sq.seg % SQ_NSEG];
     d = (uint32_t)sq.bpm10 * 76087u / 10000u;   /* ticks Q16 a block: bpm10 * 96 * 32 * 65536 / (600 * 44100) */
+    if (!sq.playing) {
+        sq_nr_free(d);
+        return;
+    }
+    sq_nr_pos = 0;
+    s = &sq_seg[sq.seg % SQ_NSEG];
     if (sq.countin > 0) {                        /* the count-in: its bars of clicks, whatever CLICK is */
         uint32_t c0 = sq.cin_len - (uint32_t)(sq.countin >> 16), c1, b;
         sq.countin -= (int32_t)d;
@@ -423,6 +461,8 @@ static void sq_block(void)
             sp_trigger_lk(e->pad, sq_lvl_vel(e->lvl), e->semis, e->lk ? L[i] : 0u);
             sq.played |= 1u << e->pad;
         }
+        if (end > from)
+            sq_nr_at(from, end);
         if (to < len)
             break;
         to -= len;                                   /* the end of the segment: around, or on in the song */
